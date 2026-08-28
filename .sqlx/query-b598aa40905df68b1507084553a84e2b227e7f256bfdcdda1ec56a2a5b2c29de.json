@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM trainer_availability WHERE gym_id = $1 AND trainer_id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b598aa40905df68b1507084553a84e2b227e7f256bfdcdda1ec56a2a5b2c29de"
+}

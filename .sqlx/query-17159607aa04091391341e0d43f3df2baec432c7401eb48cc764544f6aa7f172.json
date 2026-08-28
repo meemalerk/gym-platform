@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE member_subscriptions\n               SET status = 'cancelled', cancelled_at = $3, ends_on = $4, next_charge_on = NULL\n             WHERE gym_id = $1 AND id = $2 AND status = 'active'\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Timestamptz",
+        "Date"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "17159607aa04091391341e0d43f3df2baec432c7401eb48cc764544f6aa7f172"
+}

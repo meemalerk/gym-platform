@@ -1,0 +1,649 @@
+/*
+ * The console's own styling. Tokens come from `tokens.css`, which is generated
+ * from the app's palette — see scripts/generate-console-tokens.mjs.
+ *
+ * Written as plain CSS rather than a utility framework or CSS-in-JS: this is
+ * one small application with one design language already decided, and the
+ * whole point of the generated tokens is that the language is not re-expressed
+ * here. A framework would put a second vocabulary between the two.
+ *
+ * ---------------------------------------------------------------------------
+ * Two things about this file that are decisions, not defaults:
+ *
+ * **There are almost no icons.** A back office is read, not browsed. Every
+ * glyph in a table is a word the reader has to translate, and a row of little
+ * pictures beside "Approve" and "Retire" makes a dense screen busier without
+ * making it faster. The only marks in the whole console are the brand square
+ * in the rail and the caret on a sort header — both of which mean something no
+ * word says more briefly. Status is carried by a pill with the status written
+ * in it.
+ *
+ * **Density is deliberate and uneven.** The ledger and the roster are dense
+ * because the job there is scanning two hundred rows. The overview and settings
+ * are open because the job there is reading three numbers and making one
+ * decision. Applying one density to both would make one of them wrong.
+ * ---------------------------------------------------------------------------
+ */
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: var(--accent-deep); text-underline-offset: 2px; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+::selection { background: var(--accent-badge); color: var(--accent-badge-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.shell { display: grid; grid-template-columns: 252px 1fr; min-height: 100vh; }
+
+.rail {
+  background: var(--surface);
+  border-right: var(--border-hair) solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl) 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  padding: 0 var(--space-gutter);
+}
+/* The gym's mark. A square, not a logo we do not have — and the one piece of
+   pure decoration the console allows itself. */
+.brand-mark {
+  background: var(--accent);
+  border-radius: var(--radius-xs);
+  flex: none;
+  height: 26px;
+  width: 26px;
+}
+.brand-text { min-width: 0; }
+.brand-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: var(--tracking-display);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.brand-kicker {
+  color: var(--mut);
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+}
+
+.rail nav { display: flex; flex-direction: column; gap: 2px; padding: 0 var(--space-md); }
+.nav-group {
+  color: var(--mut);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-kicker);
+  padding: var(--space-md) var(--space-sm) 6px;
+  text-transform: uppercase;
+}
+.rail nav a {
+  border-radius: var(--radius-sm);
+  color: var(--mut2);
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 8px 10px;
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+.rail nav a:hover { background: var(--sunken); color: var(--ink); }
+.rail nav a.active { background: var(--accent); color: var(--on-accent); }
+
+.rail .foot {
+  border-top: var(--border-hair) solid var(--line);
+  margin-top: auto;
+  padding: var(--space-lg) var(--space-gutter) 0;
+}
+.whoami { display: block; font-weight: 600; }
+.whoami small {
+  color: var(--mut);
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+main {
+  background: var(--surface);
+  min-width: 0;
+  padding: var(--space-xxl) var(--space-xxl) 96px;
+}
+.page { margin: 0 auto; max-width: 1160px; }
+
+/* ------------------------------------------------------------------- type */
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.1;
+  margin: 0;
+}
+.lede { color: var(--mut2); margin: 6px 0 0; max-width: 66ch; }
+
+.pagehead {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-lg);
+  justify-content: space-between;
+  margin-bottom: var(--space-xxl);
+}
+.pagehead .actions { display: flex; flex: none; gap: var(--space-sm); padding-top: 4px; }
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+.sectionhead {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-md);
+  margin: var(--space-xxl) 0 var(--space-md);
+}
+.sectionhead .count {
+  background: var(--sunken);
+  border-radius: var(--radius-pill);
+  color: var(--mut2);
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 1px 8px;
+}
+.sectionhead .spacer { flex: 1; }
+.sectionhead .note { color: var(--mut); font-size: 12.5px; }
+
+/* ------------------------------------------------------------------- card */
+
+.card {
+  background: var(--surface2);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--lift-1);
+  padding: var(--space-xl);
+}
+.card.flush { padding: 0; }
+.card + .card { margin-top: var(--space-md); }
+.card-head {
+  align-items: baseline;
+  border-bottom: var(--border-hair) solid var(--line);
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl);
+}
+.card-head .spacer { flex: 1; }
+
+/* ------------------------------------------------------------------ table */
+
+/*
+ * The table lives inside a `.card.flush`, so its own edges are the card's.
+ * `.tablewrap` scrolls horizontally on narrow screens rather than letting the
+ * page do it — a back office where the whole layout slides sideways is much
+ * worse than one where a single table does.
+ */
+.tablewrap { overflow-x: auto; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 620px; }
+
+th {
+  background: var(--surface2);
+  border-bottom: var(--border-hair) solid var(--line);
+  color: var(--mut);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-kicker);
+  padding: 12px var(--space-md);
+  position: sticky;
+  text-align: left;
+  text-transform: uppercase;
+  top: 0;
+  white-space: nowrap;
+  z-index: 1;
+}
+td {
+  border-bottom: var(--border-hair) solid var(--line);
+  padding: 12px var(--space-md);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: 0; }
+th:first-child, td:first-child { padding-left: var(--space-xl); }
+th:last-child, td:last-child { padding-right: var(--space-xl); }
+tbody tr { transition: background 100ms ease; }
+tbody tr:hover { background: var(--sunken); }
+
+.num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.strong { font-weight: 700; }
+.ref {
+  color: var(--mut2);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.rowactions { display: flex; gap: 6px; justify-content: flex-end; }
+
+/*
+ * A sortable header. The caret is one of the two glyphs in the console: no
+ * word says "sorted, descending" in less space, and the column's own label is
+ * already doing the naming.
+ */
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: var(--ink); }
+th .caret { color: var(--accent); font-size: 9px; margin-left: 4px; }
+
+/* ------------------------------------------------------------------ atoms */
+
+.chip {
+  border-radius: var(--radius-pill);
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 3px 9px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.chip-due { background: var(--warn-hi); color: var(--warn-ink); }
+.chip-paid { background: var(--success-hi); color: var(--success-ink); }
+.chip-late { background: var(--danger-hi); color: var(--danger-ink); }
+.chip-void { background: var(--sunken); color: var(--mut2); }
+.chip-ink { background: var(--accent-badge); color: var(--accent-badge-ink); }
+.chip-quiet {
+  background: transparent;
+  box-shadow: inset 0 0 0 var(--border-hair) var(--rule);
+  color: var(--mut2);
+}
+
+/* Live: the one lime in the console, same contract as the app's LivePill. */
+.chip-live {
+  background: var(--signal);
+  box-shadow: inset 0 0 0 var(--border-hair) var(--on-signal);
+  color: var(--on-signal);
+}
+
+button, .btn {
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--on-accent);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  padding: 10px 18px;
+  transition: filter 120ms ease, background 120ms ease;
+}
+/* An anchor wearing the button's clothes — used where the action is really a
+   navigation, so it stays a link for the keyboard and the middle-click. */
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+}
+a.btn:hover { color: var(--on-accent); filter: brightness(1.08); }
+
+button:hover { filter: brightness(1.08); }
+button:active { transform: translateY(0.5px); }
+button:disabled { cursor: default; filter: none; background: var(--sunken); color: var(--faint); }
+
+button.ghost {
+  background: transparent;
+  box-shadow: inset 0 0 0 var(--border-ink) var(--rule);
+  color: var(--ink);
+}
+button.ghost:hover { background: var(--sunken); filter: none; }
+button.ghost:disabled { box-shadow: inset 0 0 0 var(--border-hair) var(--line); background: transparent; }
+
+button.quiet { background: transparent; color: var(--accent-deep); padding: 8px 10px; }
+button.quiet:hover { background: var(--accent-hi); filter: none; }
+
+button.danger { background: var(--danger); }
+
+button.small { font-size: 12.5px; padding: 6px 12px; }
+
+/*
+ * A segmented control, the same shape as the app's: a recessed trough with the
+ * chosen item raised out of it. Filters in a back office are switched dozens
+ * of times an hour, and a row of loose buttons never quite says which one is
+ * currently on.
+ */
+.segmented {
+  background: var(--sunken);
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 3px;
+}
+.segmented button {
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--mut);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+}
+.segmented button:hover { color: var(--ink); filter: none; }
+.segmented button[aria-pressed='true'] {
+  background: var(--surface2);
+  box-shadow: var(--lift-1);
+  color: var(--ink);
+  font-weight: 700;
+}
+.segmented .tally {
+  font-variant-numeric: tabular-nums;
+  margin-left: 6px;
+  opacity: 0.65;
+}
+
+input, select, textarea {
+  background: var(--sunken);
+  border: var(--border-ink) solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  font: inherit;
+  padding: 11px 13px;
+  transition: border-color 120ms ease, background 120ms ease;
+  width: 100%;
+}
+input::placeholder { color: var(--faint); }
+input:focus, select:focus, textarea:focus {
+  background: var(--surface2);
+  border-color: var(--accent);
+  outline: none;
+}
+input[type='search'] { appearance: none; }
+
+label {
+  color: var(--mut2);
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* A real switch, because a button reading "On" is a label pretending to be a
+   control — you cannot tell by looking whether it says the state or the act. */
+.switch {
+  background: var(--track);
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  flex: none;
+  height: 30px;
+  padding: 3px;
+  position: relative;
+  transition: background 160ms ease;
+  width: 52px;
+}
+.switch:hover { filter: none; }
+.switch .knob {
+  background: var(--surface2);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--lift-1);
+  display: block;
+  height: 24px;
+  transform: translateX(0);
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  width: 24px;
+}
+.switch[aria-pressed='true'] { background: var(--accent); }
+.switch[aria-pressed='true'] .knob { transform: translateX(22px); }
+
+/* ------------------------------------------------------------------ stats */
+
+.stats {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+}
+.stat {
+  background: var(--surface2);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--lift-1);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-lg);
+}
+.stat .k {
+  color: var(--mut);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+}
+.stat .v {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.15;
+}
+.stat .h { color: var(--mut); font-size: 12.5px; }
+.stat.alert { border-color: var(--accent); }
+.stat.alert .v { color: var(--accent-deep); }
+.stat.alert .k { color: var(--accent-deep); }
+
+/* A stat you can click through to. Only used where the number has somewhere
+   to go — a count with nowhere to go is decoration. */
+a.stat { color: inherit; text-decoration: none; }
+a.stat:hover { border-color: var(--rule); box-shadow: var(--lift-2); }
+
+/* --------------------------------------------------------------- messages */
+
+.banner {
+  background: var(--danger-hi);
+  border-radius: var(--radius-md);
+  color: var(--danger-ink);
+  font-weight: 600;
+  margin-bottom: var(--space-lg);
+  padding: 12px 16px;
+}
+.notice {
+  background: var(--accent-hi);
+  border-radius: var(--radius-md);
+  color: var(--accent-badge-ink);
+  padding: 12px 16px;
+}
+
+.empty {
+  background: var(--surface2);
+  border: var(--border-hair) dashed var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--mut2);
+  padding: var(--space-xxl);
+  text-align: center;
+}
+.empty strong { color: var(--ink); display: block; font-size: 15px; margin-bottom: 4px; }
+
+.row { align-items: center; display: flex; flex-wrap: wrap; gap: var(--space-md); }
+.muted { color: var(--mut); }
+.field { margin-bottom: var(--space-lg); }
+.footnote {
+  border-top: var(--border-hair) solid var(--line);
+  font-size: 12.5px;
+  margin-top: var(--space-xxl);
+  max-width: 78ch;
+  padding-top: var(--space-lg);
+}
+.search { max-width: 320px; }
+
+/* --------------------------------------------------------------- sign-in */
+
+/*
+ * A split: the product's voice on the left, the form on the right. The panel
+ * earns its half by being the only place the console ever says what it is —
+ * everywhere else it is a tool, and tools should not explain themselves.
+ */
+.signin { display: grid; grid-template-columns: 1.05fr 1fr; min-height: 100vh; }
+.signin-panel {
+  background: var(--accent);
+  color: var(--on-accent);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-huge);
+}
+.signin-panel .mark {
+  background: var(--on-accent);
+  border-radius: var(--radius-sm);
+  height: 30px;
+  width: 30px;
+}
+.signin-panel h1 {
+  color: var(--on-accent);
+  font-size: clamp(34px, 4.4vw, 54px);
+  line-height: 1.02;
+  margin: 0;
+  max-width: 12ch;
+}
+.signin-panel p { margin: var(--space-lg) 0 0; max-width: 40ch; opacity: 0.85; }
+.signin-panel .foot { font-size: 12px; letter-spacing: var(--tracking-kicker); opacity: 0.8; text-transform: uppercase; }
+
+.signin-form { align-items: center; display: flex; justify-content: center; padding: var(--space-xxl); }
+.signin-form form { max-width: 380px; width: 100%; }
+.signin-form h2 { font-size: 26px; letter-spacing: var(--tracking-display); margin-bottom: var(--space-xl); }
+.signin-form button[type='submit'] { width: 100%; }
+
+.centred { align-items: center; display: flex; justify-content: center; min-height: 100vh; padding: var(--space-gutter); }
+.centred .card { max-width: 420px; width: 100%; }
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 1000px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail {
+    border-bottom: var(--border-hair) solid var(--line);
+    border-right: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    height: auto;
+    padding: var(--space-lg) var(--space-gutter);
+    position: static;
+  }
+  .brand { padding: 0; }
+  .rail nav { flex-direction: row; flex-wrap: wrap; padding: 0; }
+  .nav-group { display: none; }
+  .rail .foot {
+    border-top: 0;
+    margin-left: auto;
+    margin-top: 0;
+    padding: 0;
+  }
+  .whoami { display: none; }
+  main { padding: var(--space-gutter) var(--space-gutter) 64px; }
+  .signin { grid-template-columns: 1fr; }
+  .signin-panel { padding: var(--space-xxl) var(--space-gutter); }
+  .signin-panel .foot { display: none; }
+}
+
+@media (max-width: 620px) {
+  .pagehead { flex-direction: column; }
+  h1 { font-size: 25px; }
+  th:first-child, td:first-child { padding-left: var(--space-lg); }
+  th:last-child, td:last-child { padding-right: var(--space-lg); }
+  .card { padding: var(--space-lg); }
+}
+
+/* A definition list for "designed, not built" — a shape that says pair rather
+   than list, which is what these are. */
+.notlist { margin: 0; }
+.notlist dt {
+  font-weight: 700;
+  margin-top: var(--space-lg);
+}
+.notlist dt:first-child { margin-top: 0; }
+.notlist dd {
+  color: var(--mut2);
+  margin: 4px 0 0;
+  max-width: 74ch;
+}
+
+/* The standing editor's rungs — a ladder, not a checklist, so each rung says
+   what it unlocks rather than only what it is called. */
+.rungs { display: grid; gap: var(--space-sm); }
+.rung {
+  align-items: center;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-md);
+  padding: 10px 12px;
+  transition: background 120ms ease;
+}
+.rung:hover { background: var(--sunken); }
+.rung.locked { cursor: default; opacity: 0.5; }
+.rung.locked:hover { background: transparent; }
+.rung input { accent-color: var(--accent); height: 18px; width: 18px; flex: none; }
+.rung span { display: block; }
+.rung strong { display: block; font-weight: 700; }
+.rung small { color: var(--mut); display: block; font-size: 12.5px; }
+
+/* The one-time handover card: email, password, standing. A definition table
+   rather than prose, because it is read out loud or copied character by
+   character and a sentence is the wrong shape for that. */
+.handover { min-width: 0; width: auto; }
+.handover th {
+  background: transparent;
+  border: 0;
+  color: var(--mut);
+  padding: 6px 20px 6px 0;
+  position: static;
+  vertical-align: middle;
+  width: 1%;
+}
+.handover td { border: 0; padding: 6px 0; }
+/* Monospace and open tracking: an l/1 or O/0 confusion here costs a phone call. */
+.secret {
+  background: var(--sunken);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  user-select: all;
+}

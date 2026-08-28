@@ -1,0 +1,19 @@
+[package]
+name = "gym-domain"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+utoipa.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true
+# Tests only: the wire shape of the lifecycle enum and of prescriptions is part
+# of the contract, so it is asserted rather than assumed.
+serde_json.workspace = true

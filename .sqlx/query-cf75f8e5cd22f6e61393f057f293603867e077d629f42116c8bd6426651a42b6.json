@@ -1,0 +1,192 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT s.id, s.gym_id, s.athlete_id, s.assignment_id, s.workout_template_id,\n                   s.started_at, s.status, s.completed_at, s.abandoned_at, s.ended_at,\n                   s.title,\n                   u.display_name AS athlete_name,\n                   -- LEFT, all three: an unplanned session (ADR-0035) has no\n                   -- assignment and no template, and an inner join would drop\n                   -- it from every history list in the product rather than\n                   -- showing it without a programme name. The nullability is\n                   -- forced with `?` because it is the join that makes these\n                   -- optional, not the column definitions.\n                   t.name AS \"workout_name?\",\n                   p.name AS \"program_name?\",\n                   (SELECT count(*) FROM performed_sets ps WHERE ps.session_id = s.id)\n                       AS \"set_count!\"\n            FROM workout_sessions s\n            JOIN users u ON u.id = s.athlete_id\n            LEFT JOIN workout_templates t ON t.id = s.workout_template_id\n            LEFT JOIN program_assignments a ON a.id = s.assignment_id\n            LEFT JOIN programs p ON p.id = a.program_id\n            WHERE s.gym_id = $1 AND s.id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "athlete_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "athlete_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "assignment_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "assignment_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "workout_template_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "workout_template_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "started_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "started_at"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "completed_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "completed_at"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "abandoned_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "abandoned_at"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "ended_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "ended_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "title",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "title"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "athlete_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "workout_name?",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "workout_templates",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "program_name?",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "set_count!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true,
+      null
+    ]
+  },
+  "hash": "cf75f8e5cd22f6e61393f057f293603867e077d629f42116c8bd6426651a42b6"
+}

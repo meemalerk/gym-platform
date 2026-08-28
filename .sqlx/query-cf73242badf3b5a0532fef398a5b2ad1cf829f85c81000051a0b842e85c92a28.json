@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT open_registration FROM gyms WHERE id = $1 FOR UPDATE",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "open_registration",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "gyms",
+            "name": "open_registration"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "cf73242badf3b5a0532fef398a5b2ad1cf829f85c81000051a0b842e85c92a28"
+}

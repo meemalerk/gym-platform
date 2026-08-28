@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE class_bookings SET cancelled_at = $3\n            WHERE gym_id = $1 AND id = $2 AND cancelled_at IS NULL\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5a13113db62d5b4ea2256985e3280a325fa50210ad9888704a521109c757f6fe"
+}

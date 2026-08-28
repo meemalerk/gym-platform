@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO body_measurements\n                (user_id, measured_on, weight_kg, body_fat_percent,\n                 waist_cm, hip_cm, chest_cm, arm_cm, thigh_cm, notes)\n            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)\n            ON CONFLICT (user_id, measured_on) DO UPDATE SET\n                weight_kg = EXCLUDED.weight_kg,\n                body_fat_percent = EXCLUDED.body_fat_percent,\n                waist_cm = EXCLUDED.waist_cm,\n                hip_cm = EXCLUDED.hip_cm,\n                chest_cm = EXCLUDED.chest_cm,\n                arm_cm = EXCLUDED.arm_cm,\n                thigh_cm = EXCLUDED.thigh_cm,\n                notes = EXCLUDED.notes,\n                updated_at = now()\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date",
+        "Float8",
+        "Float8",
+        "Float8",
+        "Float8",
+        "Float8",
+        "Float8",
+        "Float8",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "551606abc75f5d56bdafd942c560ee9a1061f30475350e365f267ad3ac659b58"
+}

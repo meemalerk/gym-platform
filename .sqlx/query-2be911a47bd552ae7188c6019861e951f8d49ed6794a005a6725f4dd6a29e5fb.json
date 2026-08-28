@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE coach_relationships\n            SET status = 'ended', ended_at = $3, ended_by = $4\n            WHERE gym_id = $1 AND id = $2 AND status = 'active'\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Timestamptz",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2be911a47bd552ae7188c6019861e951f8d49ed6794a005a6725f4dd6a29e5fb"
+}

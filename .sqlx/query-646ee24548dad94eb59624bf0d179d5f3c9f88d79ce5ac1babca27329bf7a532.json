@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO coaching_requests\n                (id, gym_id, athlete_id, coach_id, raised_by, status, message, requested_at)\n            VALUES ($1, $2, $3, $4, $5, 'pending', $6, $7)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "646ee24548dad94eb59624bf0d179d5f3c9f88d79ce5ac1babca27329bf7a532"
+}

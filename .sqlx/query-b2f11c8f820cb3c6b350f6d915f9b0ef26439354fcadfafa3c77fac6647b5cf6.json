@@ -1,0 +1,161 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, gym_id, athlete_id, program_id, program_version_id,\n                   assigned_by, start_date, status,\n                   completed_at, withdrawn_at, withdrawn_by, created_at\n            FROM program_assignments WHERE gym_id = $1 AND id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "athlete_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "athlete_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "program_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "program_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "program_version_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "program_version_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "assigned_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "assigned_by"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "start_date",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "start_date"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "completed_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "completed_at"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "withdrawn_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "withdrawn_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "withdrawn_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "withdrawn_by"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "created_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "b2f11c8f820cb3c6b350f6d915f9b0ef26439354fcadfafa3c77fac6647b5cf6"
+}

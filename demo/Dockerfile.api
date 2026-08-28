@@ -1,0 +1,67 @@
+# The API, built from source and run without a Rust toolchain on the host.
+#
+# Two stages so the thing that ships is a ~100 MB Debian image with one binary
+# in it, not the 2 GB of compiler and build artefacts it took to produce.
+
+# ---------------------------------------------------------------- build stage
+FROM rust:1.97-slim-bookworm AS build
+
+# curl is a genuine BUILD dependency, not a convenience: utoipa-swagger-ui's
+# build script downloads the Swagger UI distribution during compilation, and
+# the slim image has no curl, so the build panics without this.
+# TLS is rustls throughout (see Cargo.toml), so there is no OpenSSL to link.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+
+# Cache the crates.io DOWNLOADS — the slow, network-bound half — as their own
+# layer, keyed on the lockfile. Deliberately `fetch` and not a dummy-crate
+# pre-BUILD: pre-building a workspace compiles stub versions of our own crates,
+# and cargo then happily links those empty rlibs against the real sources that
+# replace them. That fails as "no `UserId` in the root" in a crate nobody
+# touched, which is a genuinely nasty thing to debug. `fetch` downloads and
+# compiles nothing, so it cannot leave a stale artefact behind.
+COPY Cargo.toml Cargo.lock ./
+COPY crates/domain/Cargo.toml crates/domain/Cargo.toml
+COPY crates/application/Cargo.toml crates/application/Cargo.toml
+COPY crates/infrastructure/Cargo.toml crates/infrastructure/Cargo.toml
+COPY crates/api/Cargo.toml crates/api/Cargo.toml
+COPY bins/server/Cargo.toml bins/server/Cargo.toml
+RUN mkdir -p crates/domain/src crates/application/src crates/infrastructure/src \
+             crates/api/src bins/server/src \
+ && touch crates/domain/src/lib.rs crates/application/src/lib.rs \
+          crates/infrastructure/src/lib.rs crates/api/src/lib.rs \
+ && echo "fn main() {}" > bins/server/src/main.rs \
+ && cargo fetch --locked
+
+COPY crates crates
+COPY bins bins
+COPY migrations migrations
+COPY .sqlx .sqlx
+
+# Compile-time-checked SQL reads the committed query cache instead of needing a
+# live database during the build — of which there isn't one here.
+ENV SQLX_OFFLINE=true
+RUN cargo build --release --bin server
+
+# -------------------------------------------------------------- runtime stage
+FROM debian:bookworm-slim
+
+# curl is here for the container healthcheck, which is what tells the seed step
+# the API is genuinely answering rather than merely started.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl \
+ && rm -rf /var/lib/apt/lists/*
+
+# Not root. The demo is throwaway, but an image that only runs correctly as
+# root is one that teaches the wrong lesson when it gets copied.
+RUN useradd --system --create-home --uid 10001 gym
+USER gym
+
+COPY --from=build /src/target/release/server /usr/local/bin/server
+
+# Migrations are embedded in the binary at compile time (sqlx::migrate!), so
+# there is nothing to copy and nothing to keep in sync.
+CMD ["server"]

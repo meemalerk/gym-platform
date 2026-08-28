@@ -1,0 +1,47 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT u.id, u.display_name,\n                   array_agg(c.capacity ORDER BY c.capacity) AS \"capacities!: Vec<String>\"\n            FROM gym_capacities c\n            JOIN users u ON u.id = c.user_id\n            WHERE c.gym_id = $1 AND c.revoked_at IS NULL\n            GROUP BY u.id, u.display_name\n            ORDER BY u.display_name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "display_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "capacities!: Vec<String>",
+        "type_info": "TextArray",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "3cf36bcd5b1aa103b055f2d098fe35f57722d86ef81fdace1ec79bbff1c65d75"
+}

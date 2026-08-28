@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                UPDATE gym_capacities\n                SET revoked_at = NULL, granted_by = $4\n                WHERE gym_id = $1 AND user_id = $2 AND capacity = $3\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "642ff7b2dfb09c8b78620aef2aad58deb6a8c84bf716181a33b4f19dbb28ee72"
+}

@@ -1,0 +1,59 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT c.gym_id,\n                   g.name AS gym_name,\n                   g.is_personal,\n                   array_agg(c.capacity ORDER BY c.capacity) AS \"capacities!: Vec<String>\"\n            FROM gym_capacities c\n            JOIN gyms g ON g.id = c.gym_id\n            WHERE c.user_id = $1 AND c.revoked_at IS NULL\n            GROUP BY c.gym_id, g.name, g.is_personal\n            ORDER BY g.is_personal, g.name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "gym_capacities",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "gyms",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "is_personal",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "gyms",
+            "name": "is_personal"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "capacities!: Vec<String>",
+        "type_info": "TextArray",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "8d563f6b019336f02e7c3f6c4614eaefc0e420c6099bc823250a44e7e9156a9f"
+}

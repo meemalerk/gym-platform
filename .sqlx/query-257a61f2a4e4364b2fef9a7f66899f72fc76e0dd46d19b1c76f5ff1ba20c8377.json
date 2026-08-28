@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE gym_classes SET archived_at = $3\n            WHERE gym_id = $1 AND id = $2 AND archived_at IS NULL\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "257a61f2a4e4364b2fef9a7f66899f72fc76e0dd46d19b1c76f5ff1ba20c8377"
+}

@@ -1,0 +1,150 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT s.id AS session_id, s.started_at, s.status AS session_status,\n                   ps.id, ps.session_id AS set_session_id, ps.gym_id, ps.exercise_id,\n                   ps.template_exercise_id, ps.set_number, ps.performed, ps.rpe\n            FROM performed_sets ps\n            JOIN workout_sessions s ON s.id = ps.session_id\n            WHERE ps.gym_id = $1 AND ps.exercise_id = $2 AND s.athlete_id = $3\n            ORDER BY s.started_at ASC, ps.set_number ASC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "session_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "started_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "started_at"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "session_status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "workout_sessions",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "set_session_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "session_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "exercise_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "exercise_id"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "template_exercise_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "template_exercise_id"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "set_number",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "set_number"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "performed",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "performed"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "rpe",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "performed_sets",
+            "name": "rpe"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "652e75904e676f1da9e495e0df36bb79379bd983d4d9b1a238351f7dbaca1bef"
+}

@@ -1,0 +1,125 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, gym_id, coach_id, athlete_id, status,\n                   started_at, ended_at, ended_by, created_by\n            FROM coach_relationships WHERE gym_id = $1 AND id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "coach_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "coach_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "athlete_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "athlete_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "started_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "started_at"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "ended_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "ended_at"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "ended_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "ended_by"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "created_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "created_by"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "f1edbd85d0ebcdbfeec4506d3177921f297c8602950a84a4c86ad1fa355b527f"
+}

@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        UPDATE job_runs\n           SET last_finished_at = $2,\n               last_outcome = $3,\n               failures = CASE WHEN $4 THEN 0 ELSE failures + 1 END\n         WHERE name = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Timestamptz",
+        "Text",
+        "Bool"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e1f9c1604d84085c3139b9fdde9440e201580b9fa73f854897fba65a7d1f5ed1"
+}

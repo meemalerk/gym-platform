@@ -1,0 +1,203 @@
+/* Harbour Ledger — design tokens (source of truth, ADR 0013)
+ *
+ * The calm of a well-run market: paper and ink, harbour teal for action
+ * and verification, brass spent on ceremony only. Components style
+ * through tokens, never through raw values.
+ *
+ * ── Why OKLCH ──────────────────────────────────────────────────────
+ * Lightness is perceptual, so a ladder that steps evenly in L *looks*
+ * evenly stepped, and chroma is separable from hue, so a grey can be
+ * held just off neutral by an exact, measurable amount.
+ *
+ * ── The neutrals have their own hue, and it is not the brand's ─────
+ * Anchoring the greys to the accent was this palette's longest-standing
+ * mistake. Two things go wrong. Every surface picks up the brand hue, so
+ * the screen reads as a colour cast — miscalibrated rather than branded.
+ * And the eye is most sensitive around green-cyan, so the same chroma is
+ * *more* visible there than anywhere else: at C 0.006, a teal grey
+ * measures ΔE 2.7 from neutral while a blue one measures 2.1.
+ *
+ * Greys are therefore anchored at 250° (cool), independent of the 195°
+ * accent, and held under ΔE 1.5 from true grey — present as temperature,
+ * never as colour. Cool rather than warm because the register wanted
+ * here is competence and order, and because cool darks layer cleanly in
+ * dark mode where warm ones go muddy. `scripts/check-contrast.py`
+ * enforces the ceiling; "it looks subtle to me" is not evidence, since
+ * at low chroma the eye is a poor instrument.
+ *
+ * ── Why teal, not green ────────────────────────────────────────────
+ * Blue remains the most-trusted brand hue, but the trust sector is
+ * congested there; maturing brands differentiate on deep teal and
+ * refined forest green while keeping the signal. Teal also buys the
+ * separation this product specifically needs: green is neurologically
+ * the *completion* colour — the approved tick, the successful payment —
+ * so an accent sitting 24° from the success green makes "act" and
+ * "succeeded" confusable. At 195° the accent is 47° from `good`.
+ *
+ * ── Why every colour has several roles ─────────────────────────────
+ * A solid button ground and a text colour cannot be the same value: the
+ * ground must carry a legible label *on* it, the text must be legible
+ * *on* a background. Conflating them is how palettes end up with
+ * unreadable chips. Each hue therefore ships as
+ *   `x` (solid ground) · `x-press` · `x-contrast` (label on the solid)
+ *   `x-soft` (wash) · `x-line` (border on the wash) · `x-text`
+ * following the role split Radix Colors established.
+ *
+ * ── How the numbers are justified ──────────────────────────────────
+ * Verified by `scripts/check-contrast.py` on every change, against two
+ * algorithms: **WCAG 2 as the compliance floor** (what regulators cite)
+ * and **APCA Lc as the readability ceiling** (what the eye does). The
+ * second is not optional here — WCAG 2 systematically overstates
+ * contrast when both colours are dark, and this product has a dark
+ * theme. An earlier draft of this file passed WCAG at 9.65:1 for
+ * secondary text in dark mode while sitting at Lc 64.9, well under the
+ * Lc 75 a body-size secondary needs.
+ *
+ * Consumed by: design/mockups/*.html directly, and by Tailwind v4 via
+ * design/tokens/tailwind.css (@theme inline bridge).
+ */
+
+:root {
+  /* ---- surfaces ---- */
+  --paper: light-dark(oklch(0.975 0.003 250), oklch(0.145 0.004 250));  /* page ground */
+  --paper-2: light-dark(oklch(0.945 0.004 250), oklch(0.180 0.004 250));  /* sunken: inputs, wells */
+  --card: light-dark(oklch(1.000 0 0), oklch(0.200 0.004 250));  /* raised surfaces */
+  --surface-hover: light-dark(oklch(0.958 0.003 250), oklch(0.235 0.004 250));  /* a row or ghost control under the cursor */
+  --surface-active: light-dark(oklch(0.930 0.004 250), oklch(0.268 0.004 250));  /* …and pressed or selected */
+
+  /* ---- ink ---- */
+  --ink: light-dark(oklch(0.245 0.010 250), oklch(0.955 0.004 250));  /* primary text */
+  --ink-soft: light-dark(oklch(0.428 0.009 250), oklch(0.850 0.006 250));  /* secondary */
+  --ink-faint: light-dark(oklch(0.520 0.008 250), oklch(0.770 0.006 250));  /* tertiary, placeholders */
+
+  /* ---- borders ---- */
+  --line: light-dark(oklch(0.898 0.004 250), oklch(0.375 0.004 250));  /* hairlines */
+  --line-strong: light-dark(oklch(0.830 0.004 250), oklch(0.445 0.004 250));  /* dividers, interactive borders */
+
+  /* ---- accent ---- */
+  --accent: light-dark(oklch(0.480 0.082 195), oklch(0.470 0.075 195));  /* solid ground: primary buttons */
+  --accent-press: light-dark(oklch(0.415 0.071 195), oklch(0.530 0.073 195));
+  --accent-contrast: light-dark(oklch(1.000 0 0), oklch(0.955 0.004 250));  /* label on the solid ground */
+  --accent-soft: light-dark(oklch(0.955 0.026 195), oklch(0.230 0.038 195));  /* wash: selected, tier chips */
+  --accent-line: light-dark(oklch(0.870 0.043 195), oklch(0.330 0.045 195));  /* border on a wash */
+  --accent-text: light-dark(oklch(0.430 0.073 195), oklch(0.800 0.070 195));  /* accent as text — links, ghost labels */
+
+  /* ---- ceremony ---- */
+  --brass: light-dark(oklch(0.640 0.098 92), oklch(0.560 0.080 92));  /* handover stamp, numerals — never caution */
+  --brass-soft: light-dark(oklch(0.960 0.032 92), oklch(0.235 0.040 92));
+
+  /* ---- semantic ---- */
+  --good: light-dark(oklch(0.520 0.108 148), oklch(0.480 0.085 148));
+  --good-soft: light-dark(oklch(0.955 0.035 148), oklch(0.235 0.042 148));
+  --good-text: light-dark(oklch(0.470 0.105 148), oklch(0.800 0.082 148));
+  --warn: light-dark(oklch(0.535 0.120 58), oklch(0.520 0.100 58));
+  --warn-soft: light-dark(oklch(0.960 0.023 58), oklch(0.230 0.042 58));
+  --warn-text: light-dark(oklch(0.500 0.115 58), oklch(0.820 0.088 58));
+  --danger: light-dark(oklch(0.505 0.165 25), oklch(0.490 0.120 25));
+  --danger-press: light-dark(oklch(0.440 0.155 25), oklch(0.545 0.115 25));
+  --danger-contrast: light-dark(oklch(1.000 0 0), oklch(0.955 0.004 250));
+  --danger-soft: light-dark(oklch(0.957 0.020 25), oklch(0.225 0.048 25));
+  --danger-text: light-dark(oklch(0.470 0.160 25), oklch(0.800 0.105 25));
+
+  /* ---- elevation -------------------------------------------------
+   * Two layers each: a tight contact shadow that anchors the edge, and
+   * a wider ambient one that gives the lift. One-layer shadows either
+   * disappear or float. `light-dark()` is a *colour* function, so it
+   * wraps the colour inside each layer rather than the whole list.
+   */
+  --dim: light-dark(oklch(0.245 0.010 250 / 0.42), oklch(0 0 0 / 0.68));
+  --shadow-1:
+    0 1px 1px light-dark(oklch(0.245 0.010 250 / 0.05), oklch(0 0 0 / 0.40)),
+    0 1px 3px light-dark(oklch(0.245 0.010 250 / 0.05), oklch(0 0 0 / 0.40));
+  --shadow-2:
+    0 1px 2px light-dark(oklch(0.245 0.010 250 / 0.06), oklch(0 0 0 / 0.45)),
+    0 4px 12px light-dark(oklch(0.245 0.010 250 / 0.07), oklch(0 0 0 / 0.45));
+  --shadow-3:
+    0 2px 4px light-dark(oklch(0.245 0.010 250 / 0.07), oklch(0 0 0 / 0.50)),
+    0 16px 40px light-dark(oklch(0.245 0.010 250 / 0.12), oklch(0 0 0 / 0.60));
+  --shadow: var(--shadow-2);
+  --focus-ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent);
+
+  /* ---- type ------------------------------------------------------
+   * `ui-sans-serif` first so each platform's interface face wins before
+   * a generic fallback. Prices and ids are lined and tabular — a column
+   * of amounts that does not align is the fastest way to look unserious.
+   */
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text",
+    "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, monospace;
+  --numeric: "tnum" 1, "lnum" 1;
+
+  /* Fine steps at the bottom where labels live, wider at the top where
+   * headings need separation. Every step is a whole pixel. */
+  --text-2xs: 11px;  --leading-2xs: 15px;
+  --text-xs: 12px;   --leading-xs: 16px;
+  --text-sm: 13px;   --leading-sm: 19px;
+  --text-base: 15px; --leading-base: 22px;
+  --text-md: 17px;   --leading-md: 24px;
+  --text-lg: 20px;   --leading-lg: 27px;
+  --text-xl: 24px;   --leading-xl: 31px;
+  --text-2xl: 30px;  --leading-2xl: 37px;
+  --text-3xl: 38px;  --leading-3xl: 45px;
+  --tracking-widest: 0.09em;
+  --tracking-tight: -0.011em;
+
+  /* ---- scale ---- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;    /* chips, tags */
+  --radius-md: 9px;    /* buttons, inputs */
+  --radius-lg: 13px;   /* cards */
+  --radius-xl: 20px;  /* sheets */
+  --radius-full: 999px;
+
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px;
+  --space-9: 56px;
+
+  /* ---- controls ---- */
+  --control-s: 32px;
+  --control-m: 40px;
+  --control-l: 48px;
+  --tap-floor: 44px;  /* never smaller for a touch target */
+  --icon-s: 16px; --icon-m: 20px; --icon-l: 24px;
+
+  /* ---- motion (respect prefers-reduced-motion at the component layer) ---- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;   /* ceremony only */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.3, 0.5, 1); /* ceremony only */
+
+  /* ---- layers ---- */
+  --z-nav: 10; --z-sheet: 30; --z-toast: 40; --z-dialog: 50;
+}
+
+/* Theme switching.
+ *
+ * Every colour above is declared once, as `light-dark(light, dark)`.
+ * Which half applies is decided by `color-scheme`, so a theme change is
+ * two words rather than a duplicated palette — the previous version of
+ * this file restated all thirty tokens three times, and a value fixed in
+ * one block and missed in another is the resulting bug.
+ *
+ * `color-scheme` also tells the browser to theme what CSS cannot reach:
+ * form controls, scrollbars, the caret, and the canvas behind an
+ * overscroll. A dark page with light scrollbars is the usual tell that a
+ * theme was painted on rather than declared.
+ *
+ * The default is `light dark` — the *system* preference wins until
+ * somebody chooses otherwise, which is the only default that is not an
+ * opinion about someone else's eyes.
+ */
+:root {
+  color-scheme: light dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}

@@ -1,0 +1,196 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT a.id, a.gym_id, a.athlete_id, a.program_id, a.program_version_id,\n                   a.assigned_by, a.start_date, a.status,\n                   a.completed_at, a.withdrawn_at, a.withdrawn_by, a.created_at,\n                   u.display_name AS athlete_name,\n                   p.name AS program_name,\n                   v.version_number\n            FROM program_assignments a\n            JOIN users u ON u.id = a.athlete_id\n            JOIN programs p ON p.id = a.program_id\n            JOIN program_versions v ON v.id = a.program_version_id\n            WHERE a.gym_id = $1\n            ORDER BY (a.status = 'active') DESC, a.created_at DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "athlete_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "athlete_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "program_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "program_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "program_version_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "program_version_id"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "assigned_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "assigned_by"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "start_date",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "start_date"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "completed_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "completed_at"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "withdrawn_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "withdrawn_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "withdrawn_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "withdrawn_by"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_assignments",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "athlete_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "program_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "version_number",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "version_number"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1c069c9ef4425edeccda492325545a914484d903b0ca2eb7f114cc54accfa0d2"
+}

@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE auth_tokens\n               SET used_at = $3\n             WHERE user_id = $1 AND purpose = $2 AND used_at IS NULL\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e3e68e5359de9e7865099b1ea1c2330c52c01c1c855c3ba11f531a80b1ff721c"
+}

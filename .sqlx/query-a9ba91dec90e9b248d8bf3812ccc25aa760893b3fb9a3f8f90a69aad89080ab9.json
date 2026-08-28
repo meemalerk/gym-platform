@@ -1,0 +1,77 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, gym_id, weekday, opens_at, closes_at\n            FROM trainer_availability\n            WHERE gym_id = $1 AND trainer_id = $2\n            ORDER BY weekday, opens_at\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "trainer_availability",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "trainer_availability",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "weekday",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "trainer_availability",
+            "name": "weekday"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "opens_at",
+        "type_info": "Time",
+        "origin": {
+          "Table": {
+            "table": "trainer_availability",
+            "name": "opens_at"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "closes_at",
+        "type_info": "Time",
+        "origin": {
+          "Table": {
+            "table": "trainer_availability",
+            "name": "closes_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "a9ba91dec90e9b248d8bf3812ccc25aa760893b3fb9a3f8f90a69aad89080ab9"
+}

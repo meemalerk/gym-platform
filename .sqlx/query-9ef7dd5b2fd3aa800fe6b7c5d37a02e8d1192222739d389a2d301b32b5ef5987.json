@@ -1,0 +1,137 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, gym_id, athlete_id, coach_id, raised_by, status, message,\n                   requested_at, decided_at, decided_by\n            FROM coaching_requests\n            WHERE gym_id = $1 AND id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "athlete_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "athlete_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "coach_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "coach_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "raised_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "raised_by"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "message",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "message"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "requested_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "requested_at"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "decided_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "decided_at"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "decided_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coaching_requests",
+            "name": "decided_by"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "9ef7dd5b2fd3aa800fe6b7c5d37a02e8d1192222739d389a2d301b32b5ef5987"
+}

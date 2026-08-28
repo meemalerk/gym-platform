@@ -1,0 +1,268 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT DISTINCT ON (p.id)\n                   p.id AS program_id, p.gym_id, p.name, p.summary, p.focus,\n                   p.created_by, p.created_at,\n                   v.id AS version_id, v.version_number, v.status,\n                   v.submitted_at, v.submitted_by, v.approved_at, v.approved_by,\n                   v.published_at, v.published_by, v.archived_at, v.archived_by,\n                   v.created_by AS version_created_by, v.created_at AS version_created_at,\n                   v.derived_from\n            FROM programs p\n            JOIN program_versions v ON v.program_id = p.id\n            WHERE p.gym_id = $1\n            ORDER BY p.id, v.version_number DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "program_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "summary",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "summary"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "focus",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "focus"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "created_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "created_by"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "programs",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "version_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "version_number",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "version_number"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "submitted_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "submitted_at"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "submitted_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "submitted_by"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "approved_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "approved_at"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "approved_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "approved_by"
+          }
+        }
+      },
+      {
+        "ordinal": 14,
+        "name": "published_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "published_at"
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "published_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "published_by"
+          }
+        }
+      },
+      {
+        "ordinal": 16,
+        "name": "archived_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "archived_at"
+          }
+        }
+      },
+      {
+        "ordinal": 17,
+        "name": "archived_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "archived_by"
+          }
+        }
+      },
+      {
+        "ordinal": 18,
+        "name": "version_created_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "created_by"
+          }
+        }
+      },
+      {
+        "ordinal": 19,
+        "name": "version_created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 20,
+        "name": "derived_from",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "program_versions",
+            "name": "derived_from"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "85f77350cbd4a2c60434469d7ceebf05a033cd305bb6a32d0b5789fd2240e27b"
+}

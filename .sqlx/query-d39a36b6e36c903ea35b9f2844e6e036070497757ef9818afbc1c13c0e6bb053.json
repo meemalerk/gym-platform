@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT capacity\n            FROM gym_capacities\n            WHERE user_id = $1 AND gym_id = $2 AND revoked_at IS NULL\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "capacity",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "gym_capacities",
+            "name": "capacity"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d39a36b6e36c903ea35b9f2844e6e036070497757ef9818afbc1c13c0e6bb053"
+}

@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO athlete_profiles\n                (user_id, goals, training_age_months, limitations, date_of_birth, height_cm)\n            VALUES ($1, $2, $3, $4, $5, $6)\n            ON CONFLICT (user_id) DO UPDATE SET\n                goals = EXCLUDED.goals,\n                training_age_months = EXCLUDED.training_age_months,\n                limitations = EXCLUDED.limitations,\n                date_of_birth = EXCLUDED.date_of_birth,\n                height_cm = EXCLUDED.height_cm,\n                updated_at = now()\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Int4",
+        "Text",
+        "Date",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bc2b6ceca2d9c9aa25639cfc2aa7244dd7c5e1f5f381361c4db2a44208dfaeea"
+}

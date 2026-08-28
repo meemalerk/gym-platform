@@ -1,0 +1,25 @@
+/* Harbour Ledger 02 — 2032 refresh layered over assets/harbour.css
+   Type: Schibsted Grotesk (UI + display), Spline Sans Mono (ids, numerals).
+   Geometry: softer, larger radii; glass surfaces; deeper layered shadows. */
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Spline+Sans+Mono:wght@400..700&display=swap');
+
+:root {
+  --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --mono: "Spline Sans Mono", ui-monospace, "SF Mono", monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 13px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* translucent layered surfaces */
+  --glass: color-mix(in srgb, var(--card) 82%, transparent);
+  --glass-strong: color-mix(in srgb, var(--card) 64%, transparent);
+
+  --shadow-2:
+    0 1px 2px light-dark(oklch(0.245 0.010 250 / 0.05), oklch(0 0 0 / 0.45)),
+    0 6px 20px light-dark(oklch(0.245 0.010 250 / 0.06), oklch(0 0 0 / 0.40));
+  --shadow-3:
+    0 2px 4px light-dark(oklch(0.245 0.010 250 / 0.06), oklch(0 0 0 / 0.50)),
+    0 24px 64px light-dark(oklch(0.245 0.010 250 / 0.13), oklch(0 0 0 / 0.55));
+}

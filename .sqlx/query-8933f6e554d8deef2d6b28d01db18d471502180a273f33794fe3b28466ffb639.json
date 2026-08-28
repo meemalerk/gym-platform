@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO trainer_availability\n                    (id, gym_id, trainer_id, weekday, opens_at, closes_at)\n                VALUES ($1, $2, $3, $4, $5, $6)\n                ON CONFLICT DO NOTHING\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Int2",
+        "Time",
+        "Time"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8933f6e554d8deef2d6b28d01db18d471502180a273f33794fe3b28466ffb639"
+}

@@ -1,0 +1,42 @@
+# The app, exported as a plain web bundle and served by nginx.
+#
+# This is the same React Native codebase the phone runs, compiled for the
+# browser by react-native-web. It is a *viewing* surface, not the product —
+# ADR-0009 puts the real browser client in a separate React + Vite app — but it
+# means someone can look at the whole thing without installing Xcode.
+
+# ---------------------------------------------------------------- build stage
+FROM node:24-bookworm-slim AS build
+
+WORKDIR /app
+
+# Lockfile first, so a code change does not re-install 1,200 packages.
+COPY apps/mobile/package.json apps/mobile/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+COPY apps/mobile ./
+
+# Empty on purpose: "same origin as this page". EXPO_PUBLIC_* values are
+# inlined into the bundle at build time, so anything absolute is a promise about
+# a machine we have not met. `http://localhost:8211` works only for the person
+# who built it — everyone else's browser would dial their own laptop. Relative
+# means the URL travels: nginx proxies /api to the backend, so the same bundle
+# works on localhost, on a LAN address, and down a tunnel, unchanged.
+ARG API_URL=
+ENV EXPO_PUBLIC_API_URL=$API_URL
+
+# Turn the one-tap demo sign-in buttons back on. An export is a production
+# build, so `__DEV__` is false and they would otherwise be stripped — leaving a
+# viewer at a login form with no credentials. Opt-in and build-time: a real
+# release build sets nothing here and dead-strips the branch. See
+# apps/mobile/src/dev/demo-accounts.ts for the full reasoning.
+ENV EXPO_PUBLIC_DEMO_ACCOUNTS=true
+ENV EXPO_NO_TELEMETRY=1
+
+RUN npx expo export --platform web --output-dir dist
+
+# -------------------------------------------------------------- runtime stage
+FROM nginx:1.29-alpine
+
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY demo/nginx.conf /etc/nginx/conf.d/default.conf

@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE program_assignments\n            SET status = $3, completed_at = $4, withdrawn_at = $5, withdrawn_by = $6\n            WHERE gym_id = $1 AND id = $2 AND status = 'active'\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz",
+        "Timestamptz",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2f6ee35a78cd8d42e65e275899082360342226046a8b63b04bfd81e7dea6f921"
+}

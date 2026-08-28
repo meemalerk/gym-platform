@@ -1,0 +1,39 @@
+# Rust
+/target
+**/*.rs.bk
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+
+# Env & secrets — never commit
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Build artifacts
+*.log
+coverage/
+
+# Mobile
+apps/mobile/node_modules/
+apps/mobile/.expo/
+apps/mobile/expo-env.d.ts
+*.Zone.Identifier
+*:Zone.Identifier
+
+# Downloaded helper binaries for the demo tunnel (fetched on demand).
+demo/.bin/
+.env.backup
+.env.*.backup

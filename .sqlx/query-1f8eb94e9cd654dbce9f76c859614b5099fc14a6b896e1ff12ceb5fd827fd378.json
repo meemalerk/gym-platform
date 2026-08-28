@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE invoices\n               SET status = $3, paid_at = $4, voided_at = $5, voided_by = $6, void_reason = $7\n             WHERE gym_id = $1 AND id = $2 AND status = 'due'\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz",
+        "Timestamptz",
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1f8eb94e9cd654dbce9f76c859614b5099fc14a6b896e1ff12ceb5fd827fd378"
+}

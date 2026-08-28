@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO gym_calendar_overrides\n                (id, gym_id, on_date, is_closed, opens_at, closes_at, reason)\n            VALUES ($1, $2, $3, $4, $5, $6, $7)\n            ON CONFLICT (gym_id, on_date) DO UPDATE\n                SET is_closed = EXCLUDED.is_closed,\n                    opens_at  = EXCLUDED.opens_at,\n                    closes_at = EXCLUDED.closes_at,\n                    reason    = EXCLUDED.reason\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Date",
+        "Bool",
+        "Time",
+        "Time",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a52ddaa5a231173c7bfefcb5322823ea3fc87fb3470f762eda3373412d8906e9"
+}

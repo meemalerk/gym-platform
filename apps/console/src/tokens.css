@@ -1,0 +1,146 @@
+/*
+ * GENERATED — do not edit.
+ *
+ * Source: apps/mobile/src/ui/theme.ts
+ * Regenerate: node scripts/generate-console-tokens.mjs
+ *
+ * The palette lives in one place because it is verified in one place:
+ * scripts/verify-contrast.mjs checks every pair against WCAG 2.1 AA, and a
+ * hand-copied second palette would be an unverified one. Change the values in
+ * theme.ts, re-run the contrast check, then regenerate this.
+ */
+
+:root {
+  --bg: #e4e4ee;
+  --surface: #f1f1f7;
+  --surface2: #ffffff;
+  --surface3: #ffffff;
+  --sunken: #e9e9f2;
+  --ink: #16161f;
+  --ink-inv: #ffffff;
+  --mut: #5f6070;
+  --mut2: #414252;
+  --faint: #65667a;
+  --inv-mut: #a9a9bc;
+  --inv-track: #4a4b5e;
+  --rule: #82839a;
+  --line: #dadae8;
+  --track: #d5d5e4;
+  --accent: #5127d8;
+  --on-accent: #ffffff;
+  --accent-press: #3f1cb2;
+  --accent-soft: #b3a0ff;
+  --accent-hi: #efecff;
+  --accent-track: #3f1cb2;
+  --accent-badge: #e3dcff;
+  --accent-badge-ink: #3a1a9e;
+  --accent-deep: #4a24c8;
+  --signal: #c9f24a;
+  --on-signal: #1a2205;
+  --signal-deep: #4a6000;
+  --danger: #c01029;
+  --danger-hi: #fde9ec;
+  --danger-ink: #9c0c20;
+  --success: #0c7350;
+  --success-hi: #e0f6ee;
+  --success-ink: #0a5c40;
+  --warn: #9a5300;
+  --warn-hi: #fcefd9;
+  --warn-ink: #7d4300;
+  --shadow: #191926;
+  --overlay: #16161f;
+  --viewfinder: #000000;
+  --on-viewfinder: #ffffff;
+
+  /* Structure — ADR-0030's Signal language. Containment is fill + elevation;
+     a border is for something you can type into or press. */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --border-ink: 1.5px;
+  --border-hair: 1px;
+
+  /* 4pt rhythm, matching the app's space scale. */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-gutter: 20px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --space-huge: 48px;
+
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Plus Jakarta Sans', -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --tracking-kicker: 0.8px;
+  --tracking-display: -0.9px;
+
+  /* Elevation. Light lifts a white card off a tinted ground; dark cannot cast
+     a shadow on near-black, so the block below flattens these to none and the
+     surface steps do the containing instead. */
+  --lift-1: 0 1px 3px rgb(25 25 38 / 6%);
+  --lift-2: 0 4px 12px rgb(25 25 38 / 8%);
+  --lift-3: 0 10px 26px rgb(25 25 38 / 12%);
+}
+
+/*
+ * The scheme follows the OS, like the app. There is no toggle: a console used
+ * beside the phone app should not be able to disagree with it about whether it
+ * is night.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #07070b;
+    --surface: #0d0d13;
+    --surface2: #1a1a24;
+    --surface3: #242531;
+    --sunken: #0b0b11;
+    --ink: #f0f0f6;
+    --ink-inv: #0d0d13;
+    --mut: #9596a8;
+    --mut2: #c0c1d0;
+    --faint: #84859a;
+    --inv-mut: #585a6c;
+    --inv-track: #b1b2c2;
+    --rule: #6a6c82;
+    --line: #2c2d3a;
+    --track: #31323f;
+    --accent: #a48cff;
+    --on-accent: #120c26;
+    --accent-press: #bcaaff;
+    --accent-soft: #5a2fd6;
+    --accent-hi: #1e193a;
+    --accent-track: #6a4fd6;
+    --accent-badge: #2a2352;
+    --accent-badge-ink: #c8b8ff;
+    --accent-deep: #b09cff;
+    --signal: #c9f24a;
+    --on-signal: #1a2205;
+    --signal-deep: #bde63e;
+    --danger: #ff8f97;
+    --danger-hi: #3a1218;
+    --danger-ink: #ffb4ba;
+    --success: #5ed3a0;
+    --success-hi: #0e2b21;
+    --success-ink: #7fe0b5;
+    --warn: #f2b862;
+    --warn-hi: #34230d;
+    --warn-ink: #f7d094;
+    --shadow: #000000;
+    --overlay: #000000;
+    --viewfinder: #000000;
+    --on-viewfinder: #ffffff;
+
+    /* No cast shadow on near-black — it is invisible and only muddies edges.
+       Containment falls to the surface steps, exactly as it does in the app
+       (see makeElevation in theme.ts). */
+    --lift-1: none;
+    --lift-2: none;
+    --lift-3: none;
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT g.id, g.gym_id, g.athlete_id, g.set_by, g.metric, g.target_date,\n                   g.status, g.achieved_at, g.confirmed_by, g.abandoned_at, g.abandoned_by,\n                   g.created_at, u.display_name AS athlete_name\n            FROM goals g\n            JOIN users u ON u.id = g.athlete_id\n            WHERE g.gym_id = $1\n            ORDER BY (g.status = 'active') DESC, g.created_at DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "athlete_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "athlete_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "set_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "set_by"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "metric",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "metric"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "target_date",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "target_date"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "achieved_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "achieved_at"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "confirmed_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "confirmed_by"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "abandoned_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "abandoned_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "abandoned_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "abandoned_by"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "goals",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "athlete_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "2b5478d6acb92816b67e3a8664331784e6290178b3f045ab3a8a8f27d6b4ec13"
+}

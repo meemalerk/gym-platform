@@ -1,0 +1,77 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, week_id, day_number, name, notes\n            FROM workout_templates WHERE gym_id = $1 AND id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_templates",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "week_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "workout_templates",
+            "name": "week_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "day_number",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "workout_templates",
+            "name": "day_number"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "workout_templates",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "notes",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "workout_templates",
+            "name": "notes"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "6385cb4c9a49d0ac28bfc53625b66ea128003ffa83c5e267a2d165e438026d7d"
+}

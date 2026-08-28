@@ -1,0 +1,72 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT r.gym_id, r.coach_id, r.athlete_id, u.display_name AS athlete_name,\n               (SELECT max(s.started_at)\n                  FROM workout_sessions s\n                 WHERE s.athlete_id = r.athlete_id AND s.gym_id = r.gym_id) AS last_session\n        FROM coach_relationships r\n        JOIN users u ON u.id = r.athlete_id\n        WHERE r.status = 'active'\n          -- They must be ON something. \"Hasn't trained\" is only a useful\n          -- signal for someone who was supposed to be.\n          AND EXISTS (\n                SELECT 1 FROM program_assignments a\n                WHERE a.athlete_id = r.athlete_id\n                  AND a.gym_id = r.gym_id\n                  AND a.status = 'active'\n              )\n          AND NOT EXISTS (\n                SELECT 1 FROM workout_sessions s\n                WHERE s.athlete_id = r.athlete_id\n                  AND s.gym_id = r.gym_id\n                  AND s.started_at >= $1\n              )\n          -- Once per athlete per week, so a client who is away for a month\n          -- generates four notices rather than thirty.\n          AND NOT EXISTS (\n                SELECT 1 FROM domain_events e\n                WHERE e.event_type = 'client.idle'\n                  AND e.payload ->> 'athlete_id' = r.athlete_id::text\n                  AND e.occurred_at >= $2\n              )\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "coach_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "coach_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "athlete_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "coach_relationships",
+            "name": "athlete_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "athlete_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "last_session",
+        "type_info": "Timestamptz",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Timestamptz",
+        "Timestamptz"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "53b1d28c7c8e81fc767474b4eb7394d60d35512aa0feda4491b18d3808ffce0d"
+}

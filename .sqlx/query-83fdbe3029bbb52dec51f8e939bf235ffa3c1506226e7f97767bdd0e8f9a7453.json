@@ -1,0 +1,172 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT c.id, c.gym_id, c.name, c.instructor_id, c.weekday, c.starts_at,\n                   c.duration_minutes, c.capacity, c.description, c.archived_at,\n                   u.display_name AS instructor_name,\n                   d.day::date AS \"on_date!\",\n                   (SELECT COUNT(*) FROM class_bookings b\n                     WHERE b.class_id = c.id AND b.on_date = d.day::date\n                       AND b.cancelled_at IS NULL) AS \"booked!\",\n                   (SELECT b.id FROM class_bookings b\n                     WHERE b.class_id = c.id AND b.on_date = d.day::date\n                       AND b.member_id = $4 AND b.cancelled_at IS NULL\n                     LIMIT 1) AS \"my_booking_id?\"\n            FROM gym_classes c\n            JOIN users u ON u.id = c.instructor_id\n            CROSS JOIN generate_series($2::date, $3::date, interval '1 day') AS d(day)\n            WHERE c.gym_id = $1\n              AND c.archived_at IS NULL\n              AND EXTRACT(DOW FROM d.day)::smallint = c.weekday\n            ORDER BY d.day, c.starts_at, c.name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "instructor_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "instructor_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "weekday",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "weekday"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "starts_at",
+        "type_info": "Time",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "starts_at"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "duration_minutes",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "duration_minutes"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "capacity",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "capacity"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "description",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "description"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "archived_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "gym_classes",
+            "name": "archived_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "instructor_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "on_date!",
+        "type_info": "Date",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 12,
+        "name": "booked!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      },
+      {
+        "ordinal": 13,
+        "name": "my_booking_id?",
+        "type_info": "Uuid",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date",
+        "Date",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "83fdbe3029bbb52dec51f8e939bf235ffa3c1506226e7f97767bdd0e8f9a7453"
+}

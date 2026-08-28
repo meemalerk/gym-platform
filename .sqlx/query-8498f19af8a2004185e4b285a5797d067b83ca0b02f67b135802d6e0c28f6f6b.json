@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO invoice_sequences (gym_id, year, next_number)\n            VALUES ($1, $2, 2)\n            ON CONFLICT (gym_id, year)\n            DO UPDATE SET next_number = invoice_sequences.next_number + 1\n            RETURNING next_number - 1 AS \"number!\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "number!",
+        "type_info": "Int4",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "8498f19af8a2004185e4b285a5797d067b83ca0b02f67b135802d6e0c28f6f6b"
+}

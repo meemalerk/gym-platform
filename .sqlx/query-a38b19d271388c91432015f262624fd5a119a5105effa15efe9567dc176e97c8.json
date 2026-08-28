@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE coaching_requests\n               SET status = $3, decided_at = $4, decided_by = $5\n             WHERE gym_id = $1 AND id = $2 AND status = 'pending'\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a38b19d271388c91432015f262624fd5a119a5105effa15efe9567dc176e97c8"
+}

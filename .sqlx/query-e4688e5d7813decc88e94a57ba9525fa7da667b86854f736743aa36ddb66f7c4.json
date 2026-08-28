@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        UPDATE domain_events\n           SET attempts = attempts + 1,\n               last_error = $2,\n               next_attempt_at = $3\n         WHERE id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e4688e5d7813decc88e94a57ba9525fa7da667b86854f736743aa36ddb66f7c4"
+}

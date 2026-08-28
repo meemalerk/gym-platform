@@ -1,0 +1,131 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT p.id, p.gym_id, p.name, p.description, p.price_minor, p.currency,\n                   p.interval, p.grants, p.archived_at,\n                   (SELECT count(*) FROM member_subscriptions s\n                     WHERE s.plan_id = p.id AND s.status = 'active') AS \"active_subscribers!\"\n            FROM membership_plans p\n            WHERE p.gym_id = $1\n            ORDER BY p.archived_at NULLS FIRST, p.price_minor\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "description"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "price_minor",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "price_minor"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "currency",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "currency"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "interval",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "interval"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "grants",
+        "type_info": "TextArray",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "grants"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "archived_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "archived_at"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "active_subscribers!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      null
+    ]
+  },
+  "hash": "023f2a9b9ec295ac08535923769b815c1968b422496369ae9aa99cfc0a07bd9d"
+}

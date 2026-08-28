@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT COUNT(*) AS \"count!\"\n            FROM workout_template_exercises e\n            JOIN workout_templates wk ON wk.id = e.workout_id\n            JOIN program_weeks w ON w.id = wk.week_id\n            WHERE w.gym_id = $1 AND w.version_id = $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "1312502faa7e8f7a4ed9b0dbfbbad5c62368211be13cee90e2293c696d41fb72"
+}

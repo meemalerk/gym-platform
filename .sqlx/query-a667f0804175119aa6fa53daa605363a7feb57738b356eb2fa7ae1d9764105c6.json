@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT c.id, c.member_id, c.scanned_by, c.allowed, c.reason, c.scanned_at,\n                   u.display_name AS member_name\n            FROM gym_checkins c\n            JOIN users u ON u.id = c.member_id\n            WHERE c.gym_id = $1\n            ORDER BY c.scanned_at DESC, c.id DESC\n            LIMIT 50\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "gym_checkins",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "member_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "gym_checkins",
+            "name": "member_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "scanned_by",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "gym_checkins",
+            "name": "scanned_by"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "allowed",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "gym_checkins",
+            "name": "allowed"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "reason",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "gym_checkins",
+            "name": "reason"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "scanned_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "gym_checkins",
+            "name": "scanned_at"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "member_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "a667f0804175119aa6fa53daa605363a7feb57738b356eb2fa7ae1d9764105c6"
+}

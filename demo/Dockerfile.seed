@@ -1,0 +1,19 @@
+# Fills the demo with people, programmes, workout history, plans and invoices.
+#
+# The seed talks to the running API over HTTP rather than writing to the
+# database directly, so invitations, capacity grants and the audit trail are all
+# genuinely exercised — the demo data is real data, produced the way a real gym
+# would produce it.
+#
+# Debian rather than Alpine on purpose: the script uses GNU `date -d "-1 month"`
+# to back-date history, which BusyBox's date does not support.
+FROM python:3.12-slim-bookworm
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY scripts/seed-demo.sh /app/seed-demo.sh
+
+ENTRYPOINT ["bash", "/app/seed-demo.sh"]

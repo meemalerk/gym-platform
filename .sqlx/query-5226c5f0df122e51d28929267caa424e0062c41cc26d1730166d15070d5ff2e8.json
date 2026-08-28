@@ -1,0 +1,18 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                INSERT INTO gym_opening_hours (id, gym_id, weekday, opens_at, closes_at)\n                VALUES ($1, $2, $3, $4, $5)\n                ON CONFLICT DO NOTHING\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Int2",
+        "Time",
+        "Time"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5226c5f0df122e51d28929267caa424e0062c41cc26d1730166d15070d5ff2e8"
+}

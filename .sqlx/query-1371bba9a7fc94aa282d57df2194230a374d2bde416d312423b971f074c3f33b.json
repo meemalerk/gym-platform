@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE goals\n            SET status = $3, achieved_at = $4, confirmed_by = $5,\n                abandoned_at = $6, abandoned_by = $7\n            WHERE gym_id = $1 AND id = $2 AND status = 'active'\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz",
+        "Uuid",
+        "Timestamptz",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1371bba9a7fc94aa282d57df2194230a374d2bde416d312423b971f074c3f33b"
+}

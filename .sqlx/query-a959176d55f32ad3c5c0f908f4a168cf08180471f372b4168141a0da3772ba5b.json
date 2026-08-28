@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM gym_opening_hours WHERE gym_id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a959176d55f32ad3c5c0f908f4a168cf08180471f372b4168141a0da3772ba5b"
+}

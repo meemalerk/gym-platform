@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE exercises\n               SET status = $3\n             WHERE gym_id = $1 AND id = $2\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "baf28ce2cfff1c2a9fe57c5e0d4ffc1a2f26a419da21122659962999b3eb0d18"
+}

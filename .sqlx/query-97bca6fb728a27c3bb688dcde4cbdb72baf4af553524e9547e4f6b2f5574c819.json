@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE member_subscriptions SET next_charge_on = NULL WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "97bca6fb728a27c3bb688dcde4cbdb72baf4af553524e9547e4f6b2f5574c819"
+}

@@ -1,0 +1,24 @@
+# Keep the build context small. Everything here is either rebuilt inside the
+# image, irrelevant to it, or far too large to ship to the Docker daemon.
+
+.git/
+target/
+**/node_modules/
+**/.expo/
+**/dist/
+**/web-build/
+
+# Documentation and research — hundreds of megabytes, none of it built.
+docs/
+research/
+screenshots/
+gym-app/
+
+# Local secrets and machine state. `.env` in particular must never reach an
+# image: the demo compose file supplies its own values.
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,101 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "bins/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+license = "UNLICENSED"
+
+[workspace.dependencies]
+# Internal crates
+gym-domain = { path = "crates/domain" }
+gym-application = { path = "crates/application" }
+gym-infrastructure = { path = "crates/infrastructure" }
+gym-api = { path = "crates/api" }
+
+# Runtime + HTTP
+tokio = { version = "1.53", features = ["full"] }
+axum = { version = "0.8.9", features = [
+    "http1", "http2", "json", "macros", "matched-path", "query", "tokio", "tracing", "ws",
+] }
+tower = { version = "0.5.3", features = ["util", "timeout", "limit"] }
+tower-http = { version = "0.7.0", features = [
+    "catch-panic", "compression-br", "compression-gzip", "cors", "limit",
+    "normalize-path", "request-id", "sensitive-headers", "timeout", "trace",
+] }
+
+# Database
+sqlx = { version = "0.9.0", default-features = false, features = [
+    "runtime-tokio", "tls-rustls-ring-webpki", "postgres", "macros", "migrate",
+    "uuid", "chrono", "json",
+] }
+
+# Serialization / types
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+uuid = { version = "1.24", features = ["v7", "serde"] }
+chrono = { version = "0.4.45", features = ["serde"] }
+# The gym stores an IANA zone name precisely so wall-clock times can be
+# resolved. A booking cutoff ("has 18:00 Zumba started?") is decided on the
+# SERVER, so the server is an edge here and needs the real conversion —
+# comparing in UTC would be wrong for every gym not on UTC, silently and
+# seasonally. See crates/domain/src/gym_class.rs.
+chrono-tz = "0.10"
+
+# API docs
+utoipa = { version = "5.5", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-axum = "0.2"
+utoipa-swagger-ui = { version = "9.0", features = ["axum"] }
+
+# Auth / crypto
+#
+# argon2 0.5.3 IS the latest stable — 0.6.0-rc.8 is a release candidate, and we do
+# not ship password hashing on a pre-release. Revisit when 0.6.0 goes stable.
+argon2 = { version = "0.5", features = ["std"] }
+#
+# sha2 0.11 is the latest stable and is what we use directly (refresh-token hashing,
+# and now Stripe webhook signature verification).
+# Note this puts TWO sha2/digest/hmac lines in the tree: argon2 0.5 and jsonwebtoken's
+# rust_crypto still depend on the digest-0.10 generation. That is duplication, not a
+# conflict — it costs a little binary size and will collapse once those crates move to
+# digest 0.11. Verified: builds clean, all tests pass.
+sha2 = "0.11"
+hex = "0.4"
+# Outbound HTTP to Stripe's REST API (ADR-0010's seam). rustls only, matching the
+# rest of the workspace — see demo/Dockerfile.api's note on there being no OpenSSL
+# to link. default-features off drops the native-tls fallback that would pull it in.
+reqwest = { version = "0.12", default-features = false, features = [
+    "json", "rustls-tls",
+] }
+# jsonwebtoken 10 ships NO crypto provider by default (default = ["use_pem"]) and
+# panics at first use unless one is selected. `rust_crypto` is pure Rust, so CI and
+# the distroless image need no C toolchain. `use_pem` is dropped: we sign with an
+# HMAC secret (HS256), not PEM-encoded keys.
+jsonwebtoken = { version = "10.4", default-features = false, features = ["rust_crypto"] }
+secrecy = { version = "0.10", features = ["serde"] }
+subtle = "2"
+
+# Errors / observability
+thiserror = "2.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Config
+config = "0.15"
+dotenvy = "0.15"
+
+# Dev
+rstest = "0.26"
+
+[profile.dev]
+# Faster iteration; deps still optimized enough for local runs.
+opt-level = 0
+debug = 1
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"

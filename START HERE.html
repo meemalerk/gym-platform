@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gym Platform — Start here</title>
+<style>
+  /* Self-contained on purpose: this file is opened by double-clicking it from
+     a folder, with no server and possibly no internet. Nothing is fetched. */
+  :root {
+    --ink: #14100e; --mut: #6b6560; --rule: #d5d1ce;
+    --bg: #ffffff; --panel: #f7f5f4; --accent: #d92b0f; --onAccent: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2eeec; --mut: #b3aca8; --rule: #3d3936;
+      --bg: #14100e; --panel: #1c1815; --accent: #ff6242; --onAccent: #14100e;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink); margin: 0;
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 0 20px 80px;
+  }
+  main { max-width: 720px; margin: 0 auto; }
+  header { background: var(--accent); color: var(--onAccent); margin: 0 -20px 36px; padding: 44px 20px 36px; }
+  header div { max-width: 720px; margin: 0 auto; }
+  .kicker { text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; }
+  h1 { font-size: 40px; line-height: 1.05; margin: 10px 0 8px; letter-spacing: -.02em; }
+  header p { margin: 0; font-size: 17px; }
+  h2 { font-size: 24px; margin: 44px 0 6px; letter-spacing: -.01em; }
+  h2 .num {
+    display: inline-block; min-width: 30px; height: 30px; line-height: 30px; text-align: center;
+    background: var(--accent); color: var(--onAccent); font-size: 15px; margin-right: 10px;
+    vertical-align: 3px; font-weight: 700;
+  }
+  p, li { color: var(--ink); }
+  .lede { color: var(--mut); margin-top: 0; }
+  a { color: var(--accent); }
+  .panel { background: var(--panel); border: 1px solid var(--rule); padding: 18px 20px; margin: 18px 0; }
+  .note { border-left: 4px solid var(--accent); padding: 12px 16px; margin: 18px 0; background: var(--panel); }
+  code, .file {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--panel); border: 1px solid var(--rule); padding: 2px 7px; font-size: .92em;
+    white-space: nowrap;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--mut); }
+  .big { font-size: 18px; }
+  ol.steps { padding-left: 0; list-style: none; }
+  ol.steps li { margin: 0 0 10px; }
+  footer { color: var(--mut); font-size: 14px; margin-top: 56px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  @media (max-width: 620px) {
+    h1 { font-size: 30px; }
+    table, thead, tbody, th, td, tr { display: block; }
+    th { display: none; }
+    td { border: none; padding: 4px 0; }
+    tr { border-bottom: 1px solid var(--rule); padding: 12px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="kicker">Gym Platform</div>
+    <h1>Start here</h1>
+    <p>Software for running a gym — members, coaches, training programmes, billing.</p>
+  </div>
+</header>
+
+<main>
+
+<p class="lede">
+  You do not need to know anything technical. Pick whichever of the two below applies to you.
+</p>
+
+<h2><span class="num">A</span>Someone sent you a link</h2>
+
+<p class="big">Then that is all you need. Open it in any browser.</p>
+
+<p>
+  It works on Windows, on a Mac, on an iPhone, on Android. Nothing to install, nothing to set up.
+  Skip straight to <a href="#signin">Signing in</a>.
+</p>
+
+<div class="panel">
+  <strong>To make it feel like a real app on your phone</strong>
+  <table>
+    <tr><td><strong>iPhone</strong></td><td>Open the link in Safari → tap the Share button → <em>Add to Home Screen</em></td></tr>
+    <tr><td><strong>Android</strong></td><td>Open the link in Chrome → tap the ⋮ menu → <em>Add to Home screen</em></td></tr>
+  </table>
+  It then opens full-screen, with its own icon, like any other app.
+</div>
+
+<div class="note">
+  A link like this only works while the person who sent it has it running on their computer, and
+  the address changes each time they restart it. If it stops working, ask them for a new one.
+</div>
+
+<h2><span class="num">B</span>You want to run it yourself</h2>
+
+<p>
+  This puts the whole system on your own computer. It takes one installation and one
+  double-click.
+</p>
+
+<h3>Step 1 — Install Docker Desktop</h3>
+
+<p>
+  Docker is a free tool that runs software in a self-contained box. It is the <strong>only</strong>
+  thing you need to install; it handles everything else itself.
+</p>
+
+<p class="big">
+  Download it from <a href="https://www.docker.com/products/docker-desktop/">docker.com</a>
+</p>
+
+<p>
+  Choose the version for your computer. On a Mac, pick <strong>Apple silicon</strong> if your Mac
+  is from 2021 or later, otherwise <strong>Intel</strong>.
+</p>
+
+<p>
+  Install it and open it. You may be asked to restart your computer — that is normal. When it is
+  ready, the Docker whale icon in your menu bar or system tray stops animating.
+</p>
+
+<div class="note">
+  <strong>Give it enough memory.</strong> Open Docker Desktop → Settings → Resources and set
+  memory to at least <strong>4&nbsp;GB</strong>. The default is sometimes lower, and that is by
+  far the most common reason this fails to start.
+</div>
+
+<h3>Step 2 — Double-click one file</h3>
+
+<table>
+  <tr><th>Your computer</th><th>Double-click</th></tr>
+  <tr><td>Windows</td><td><span class="file">Start the app (Windows).bat</span></td></tr>
+  <tr><td>Mac</td><td><span class="file">Start the app (Mac).command</span></td></tr>
+  <tr><td>Linux</td><td><span class="file">start-demo.sh</span></td></tr>
+</table>
+
+<p>
+  A black window opens and starts printing progress. <strong>Leave it alone.</strong>
+</p>
+
+<div class="note">
+  <strong>The first run takes 5–15 minutes.</strong> It is building the whole system from
+  scratch. This happens once — every start after that takes a few seconds.
+</div>
+
+<p>
+  When it finishes, your browser opens the app by itself. If it does not, open a browser and go to
+  <code>http://localhost:8210</code>
+</p>
+
+<div class="panel">
+  <strong>On a Mac, if it refuses to open</strong><br>
+  macOS blocks files downloaded from the internet the first time.
+  <strong>Right-click</strong> the file and choose <strong>Open</strong> — that gives you an
+  <em>Open</em> button that a plain double-click does not.
+</div>
+
+<h2 id="signin"><span class="num">3</span>Signing in</h2>
+
+<p>
+  The sign-in screen has a row of buttons, one per demo account. Tap one and you are in. No
+  typing.
+</p>
+
+<p>If you would rather type them, the password for every account is <code>demopassword</code>.</p>
+
+<table>
+  <tr><th>Account</th><th>Who they are</th><th>Worth seeing</th></tr>
+  <tr><td><code>owner@demo.test</code></td><td>Runs the gym</td><td>Members, invitations, the audit trail, all the billing screens</td></tr>
+  <tr><td><code>headcoach@demo.test</code></td><td>Writes the programmes</td><td>Writing and publishing a training programme</td></tr>
+  <tr><td><code>trainer@demo.test</code></td><td>Coaches a few members</td><td>Sees <em>only their own clients</em> — nobody else's</td></tr>
+  <tr><td><code>member@demo.test</code></td><td>Trains at the gym</td><td><strong>The richest one</strong> — workout history, progress, goals</td></tr>
+  <tr><td><code>multi@demo.test</code></td><td>One person, three gyms</td><td>A different role in each. Tap the gym name to switch</td></tr>
+  <tr><td><code>admin@demo.test</code></td><td>Runs it, does not own it</td><td>Also owns a second gym — nothing leaks between them</td></tr>
+  <tr><td><code>newbie@demo.test</code></td><td>Belongs to no gym</td><td>What a brand-new sign-up sees</td></tr>
+</table>
+
+<h2><span class="num">4</span>Five things worth trying</h2>
+
+<ol class="steps">
+  <li><strong>1. Write a training programme.</strong> As <code>headcoach@</code>: Today →
+      <em>Programmes</em> → the <strong>+</strong> button. Add a week, add a workout, add
+      exercises. Notice the form changes depending on how the movement is measured. Then submit
+      it for review — <em>someone else</em> has to approve it. You cannot sign off your own work.</li>
+  <li><strong>2. Log a workout.</strong> As <code>member@</code>, tap <em>Continue</em> on Today
+      and log some sets. There is a rest timer and a session clock.</li>
+  <li><strong>3. Watch the app change shape.</strong> Sign in as <code>owner@</code>, then as
+      <code>member@</code>. The buttons along the bottom are different — the app rebuilds itself
+      around what you are allowed to do, rather than greying things out.</li>
+  <li><strong>4. Switch gyms.</strong> As <code>multi@</code>, tap the gym name at the top. Same
+      login, different gym, different role — and none of the three can see each other's data.</li>
+  <li><strong>5. See who did what.</strong> As <code>owner@</code>, open <em>Activity</em>. Every
+      change anyone made is recorded there and cannot be edited afterwards.</li>
+</ol>
+
+<h2><span class="num">5</span>Stopping it</h2>
+
+<table>
+  <tr><th>Your computer</th><th>Double-click</th></tr>
+  <tr><td>Windows</td><td><span class="file">Stop the app (Windows).bat</span></td></tr>
+  <tr><td>Mac</td><td><span class="file">Stop the app (Mac).command</span></td></tr>
+  <tr><td>Linux</td><td><span class="file">stop-demo.sh</span></td></tr>
+</table>
+
+<p>
+  Your data stays where it is. Starting it again picks up exactly where you left off, and takes
+  seconds rather than minutes.
+</p>
+
+<h2><span class="num">6</span>If something goes wrong</h2>
+
+<table>
+  <tr><th>What you see</th><th>What to do</th></tr>
+  <tr>
+    <td>“Docker is not installed” / “not running”</td>
+    <td>Open Docker Desktop and wait for the whale icon to stop animating, then try again.</td>
+  </tr>
+  <tr>
+    <td>It stopped partway, or the window closed</td>
+    <td>Almost always Docker running out of memory. Docker Desktop → Settings → Resources → set
+        memory to at least 4&nbsp;GB → <em>Apply &amp; Restart</em>, then try again.</td>
+  </tr>
+  <tr>
+    <td>“Port 8210 is already in use”</td>
+    <td>Another program is using that number. Close it, or open
+        <span class="file">source code/docker-compose.demo.yml</span> in any text editor, change
+        both <code>8210</code>s to <code>8310</code>, and use
+        <code>http://localhost:8310</code>.</td>
+  </tr>
+  <tr>
+    <td>The page loads but says it cannot reach the server</td>
+    <td>Give it another minute — the engine may still be starting. Then reload the page.</td>
+  </tr>
+</table>
+
+<h2><span class="num">7</span>What you are looking at</h2>
+
+<p>
+  Everything on screen is real. The demo data was created through the app's own front door — the
+  accounts really did sign up, the invitations really were sent and accepted, the workouts really
+  were logged. Nothing was pasted into a database behind the app's back.
+</p>
+
+<p>
+  A few things are deliberately <em>not</em> built yet, so you will not find them: class booking
+  and timetables, nutrition plans, and card payments. Invoices and payments are recorded, but no
+  real money moves. Nobody is chased for an unpaid bill either — an overdue member can still
+  train, on purpose, until that decision is made properly.
+</p>
+
+<p>
+  This browser version exists so the app can be looked at without a phone. The product itself is a
+  phone app; a couple of things (buzz-in-your-hand feedback, the phone's secure key store) simply
+  do nothing in a browser.
+</p>
+
+<footer>
+  Technical reader? The source is in <span class="file">source code/</span> —
+  start with <span class="file">README.md</span> and <span class="file">docs/README.md</span>.
+</footer>
+
+</main>
+</body>
+</html>

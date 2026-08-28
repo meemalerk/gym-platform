@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO gym_capacities (id, gym_id, user_id, capacity, granted_by)\n            VALUES ($1, $2, $3, 'owner', $3)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "89ae1a23280624ee3e5ddfc1a8ca90b2fa33686654328672d79bad1cdc3cfd79"
+}

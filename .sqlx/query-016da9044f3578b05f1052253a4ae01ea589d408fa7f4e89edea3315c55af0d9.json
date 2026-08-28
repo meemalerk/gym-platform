@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM body_measurements WHERE user_id = $1 AND measured_on = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "016da9044f3578b05f1052253a4ae01ea589d408fa7f4e89edea3315c55af0d9"
+}

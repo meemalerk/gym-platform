@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE program_versions\n            SET status = $3,\n                submitted_at = $4, submitted_by = $5,\n                approved_at  = $6, approved_by  = $7,\n                published_at = $8, published_by = $9,\n                archived_at  = $10, archived_by = $11\n            WHERE gym_id = $1 AND id = $2\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz",
+        "Uuid",
+        "Timestamptz",
+        "Uuid",
+        "Timestamptz",
+        "Uuid",
+        "Timestamptz",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "a4e5637934706862869f3f5e221e8b3aefbcc12f758652a0d0e339c1998b2c20"
+}

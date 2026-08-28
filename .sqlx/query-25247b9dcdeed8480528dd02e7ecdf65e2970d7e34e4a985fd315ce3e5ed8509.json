@@ -1,0 +1,88 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT user_id, goals, training_age_months, limitations, date_of_birth, height_cm\n            FROM athlete_profiles WHERE user_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "athlete_profiles",
+            "name": "user_id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "goals",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "athlete_profiles",
+            "name": "goals"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "training_age_months",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "athlete_profiles",
+            "name": "training_age_months"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "limitations",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "athlete_profiles",
+            "name": "limitations"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "date_of_birth",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "athlete_profiles",
+            "name": "date_of_birth"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "height_cm",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "athlete_profiles",
+            "name": "height_cm"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "25247b9dcdeed8480528dd02e7ecdf65e2970d7e34e4a985fd315ce3e5ed8509"
+}

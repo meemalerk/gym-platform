@@ -1,0 +1,110 @@
+# The whole product, in one command, on a machine with nothing but Docker.
+#
+#   docker compose -f docker-compose.demo.yml up --build
+#
+# Four services, started in order by health rather than by hopeful sleeps:
+#
+#   db   → Postgres. Not published to the host at all; nothing outside this
+#          file has any business talking to it.
+#   api  → the Rust backend. Applies migrations at boot, then serves.
+#   seed → runs once, fills the demo with data, exits.
+#   web  → the app, exported for the browser and served by nginx.
+#
+# Ports 8210/8211 are deliberately unusual: the point is to not collide with
+# whatever else the viewer happens to be running. Change them in ONE place —
+# the `ports:` lines below and DEMO_API_URL — if they clash.
+
+name: gym-demo
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: gym
+      POSTGRES_PASSWORD: gym_dev_password
+      POSTGRES_DB: gym
+      # Deterministic collation, so index ordering matches every other machine.
+      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
+    volumes:
+      - demo_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gym -d gym"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: demo/Dockerfile.api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Privileged role: used only to apply migrations at boot.
+      DATABASE_URL: postgres://gym:gym_dev_password@db:5432/gym
+      # Runtime role. Deliberately NOT the table owner — Postgres bypasses
+      # row-level security for owners, which would silently disable every
+      # tenant-isolation policy. The RLS migration creates this role.
+      APP_DATABASE_URL: postgres://gym_app:gym_app_dev_password@db:5432/gym
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: "8211"
+      # Demo-only signing key. APP_ENV stays "development" so the server does
+      # not refuse to boot on the known placeholder — which is exactly what it
+      # SHOULD do anywhere real.
+      APP_ENV: development
+      JWT_SECRET: dev-only-insecure-secret-change-me-before-any-real-deployment
+      # This demo IS a single-gym deployment (ADR-0023) — off by default so the
+      # verification suites can keep creating several gyms to prove tenant
+      # isolation; a real deployment turns this on the same deliberate way.
+      SINGLE_GYM_MODE: "true"
+      # The browser loads the app from :8210 and calls the API on :8211, which
+      # is cross-origin. Exact origins only, never a wildcard.
+      # :8090 added for the local Expo web dev server (apps/mobile) talking to
+      # this already-running demo API instead of a separately-built dev stack.
+      CORS_ALLOWED_ORIGINS: http://localhost:8210,http://127.0.0.1:8210,http://localhost:8090
+      RUST_LOG: info,tower_http=warn
+    ports:
+      - "8211:8211"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8211/health"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 10s
+    restart: unless-stopped
+
+  seed:
+    build:
+      context: .
+      dockerfile: demo/Dockerfile.seed
+    depends_on:
+      api:
+        condition: service_healthy
+    # Idempotent: every re-run is a no-op rather than a second set of gyms, so
+    # restarting the demo does not slowly fill it with duplicates.
+    command: ["http://api:8211"]
+    restart: "no"
+
+  web:
+    build:
+      context: .
+      dockerfile: demo/Dockerfile.web
+      args:
+        # Empty = same origin. nginx proxies /api to the backend, so this one
+        # bundle works on localhost, on a LAN address and down a tunnel without
+        # being rebuilt — which is what makes `demo/share.sh` possible.
+        API_URL: ""
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      # nginx resolves `api` at startup and refuses to boot if it cannot.
+      api:
+        condition: service_healthy
+    ports:
+      - "8210:8210"
+    restart: unless-stopped
+
+volumes:
+  demo_pgdata:

@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT count(*) AS \"count!\"\n            FROM gym_capacities\n            WHERE gym_id = $1 AND capacity = 'owner'\n              AND revoked_at IS NULL AND user_id <> $2\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "4d1947fbb7f7ec984475be1c37abf6ebe70fdd4cf0fb617a50e74574cace2dbe"
+}

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM gym_calendar_overrides WHERE gym_id = $1 AND on_date = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Date"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f60e4ec25da242fd139c2d0cd5600af07d24fd1551bd0733d6ba8dbde082b19a"
+}

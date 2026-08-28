@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO workout_sessions\n                (id, gym_id, athlete_id, assignment_id, workout_template_id,\n                 title, started_at, status)\n            VALUES ($1, $2, $3, $4, $5, $6, $7, 'in_progress')\n            ON CONFLICT (id) DO NOTHING\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "abc66c813a19301332c279221c5b9dd3c1c6aec93dee15c607251da56c0191d5"
+}

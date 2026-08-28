@@ -1,0 +1,172 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT s.id, s.gym_id, s.member_id, s.plan_id, s.price_minor, s.currency,\n                   s.status, s.started_on, s.next_charge_on, s.cancelled_at, s.ends_on,\n                   u.display_name AS member_name,\n                   p.name AS plan_name\n            FROM member_subscriptions s\n            JOIN users u ON u.id = s.member_id\n            JOIN membership_plans p ON p.id = s.plan_id\n            WHERE s.gym_id = $1\n            ORDER BY s.status, u.display_name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "gym_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "gym_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "member_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "member_id"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "plan_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "plan_id"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "price_minor",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "price_minor"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "currency",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "currency"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "started_on",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "started_on"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "next_charge_on",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "next_charge_on"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "cancelled_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "cancelled_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "ends_on",
+        "type_info": "Date",
+        "origin": {
+          "Table": {
+            "table": "member_subscriptions",
+            "name": "ends_on"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "member_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "plan_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "membership_plans",
+            "name": "name"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "c732fb9a9e10f3af74d1c6f46717a3af41508de6967c95c79e355eb73bde36eb"
+}
