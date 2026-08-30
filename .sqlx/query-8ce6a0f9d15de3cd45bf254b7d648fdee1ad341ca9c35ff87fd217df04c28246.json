@@ -1,0 +1,95 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT u.id,\n                   u.display_name,\n                   p.headline,\n                   p.bio,\n                   p.specialties AS \"specialties?\",\n                   p.certifications AS \"certifications?\",\n                   (\n                     SELECT count(*)\n                     FROM coach_relationships cr\n                     WHERE cr.gym_id = $1\n                       AND cr.coach_id = u.id\n                       AND cr.status = 'active'\n                   ) AS \"active_clients!\"\n            FROM users u\n            JOIN gym_capacities gc ON gc.user_id = u.id AND gc.gym_id = $1\n            LEFT JOIN trainer_profiles p ON p.user_id = u.id\n            -- `trainer` alone since ADR-0036. The list used to read\n            -- ('trainer', 'head_coach') and the line it drew was COACHING rungs\n            -- rather than every rung that can coach: owner and admin were\n            -- already excluded, because a directory a member picks a coach from\n            -- should not be padded with whoever runs the place. Removing\n            -- head_coach leaves that intent expressed by one value.\n            --\n            -- An owner who genuinely coaches holds `trainer` as well — the\n            -- capacity SET is what makes that expressible (ADR-0014) — and\n            -- appears here on that basis rather than by being senior.\n            WHERE gc.capacity = 'trainer'\n              -- Revoked standing is not standing. Missing before, and it meant\n              -- an ex-trainer stayed browsable in the directory for ever.\n              AND gc.revoked_at IS NULL\n            GROUP BY u.id, u.display_name, p.headline, p.bio, p.specialties, p.certifications\n            ORDER BY u.display_name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "display_name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "users",
+            "name": "display_name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "headline",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "trainer_profiles",
+            "name": "headline"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "bio",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "trainer_profiles",
+            "name": "bio"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "specialties?",
+        "type_info": "TextArray",
+        "origin": {
+          "Table": {
+            "table": "trainer_profiles",
+            "name": "specialties"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "certifications?",
+        "type_info": "TextArray",
+        "origin": {
+          "Table": {
+            "table": "trainer_profiles",
+            "name": "certifications"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "active_clients!",
+        "type_info": "Int8",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "8ce6a0f9d15de3cd45bf254b7d648fdee1ad341ca9c35ff87fd217df04c28246"
+}
