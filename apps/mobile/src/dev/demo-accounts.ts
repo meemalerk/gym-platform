@@ -7,9 +7,9 @@
  * `scripts/seed-demo.sh` sets: weak on purpose, only ever used against a local
  * server.
  *
- * Four accounts — owner, two trainers, member — each holding exactly one
- * capacity at the one gym this deployment serves (ADR-0023). Keep in step
- * with docs/test-accounts.md.
+ * Five accounts — an owner, two trainers, and two members — each holding
+ * exactly one capacity at the one gym this deployment serves (ADR-0023). Keep
+ * in step with docs/test-accounts.md.
  *
  * The SECOND trainer is not padding. Under ADR-0034 a trainer may only
  * prescribe for their OWN clients, and the roster is readable by the class's
@@ -52,7 +52,7 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
   {
     email: 'owner@demo.test',
     label: 'Owner',
-    hint: 'Everything, including invites',
+    hint: 'Roster, billing, the catalogue',
   },
   {
     email: 'trainer@demo.test',
@@ -68,5 +68,10 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     email: 'member@demo.test',
     label: 'Member',
     hint: 'Programmes, goals, an open workout',
+  },
+  {
+    email: 'solo@demo.test',
+    label: 'Member, no coach',
+    hint: 'Open Gym — builds their own workouts',
   },
 ];

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { DEMO_ACCOUNTS, DEMO_PASSWORD, SHOW_DEMO_ACCOUNTS } from '../dev/demo-accounts';
 import { ApiError, signIn } from '../lib/api';
 
 /**
@@ -16,12 +17,14 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
+  // One path, so a demo row cannot quietly get worse error handling than the
+  // form beside it - the failure that matters most here is "the API is not
+  // running", and it is worth naming wherever you press.
+  async function attempt(emailValue: string, passwordValue: string) {
     setError(null);
     setBusy(true);
     try {
-      await signIn(email.trim(), password);
+      await signIn(emailValue.trim(), passwordValue);
       onSignedIn();
     } catch (e) {
       setError(
@@ -40,6 +43,11 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    await attempt(email, password);
   }
 
   return (
@@ -98,6 +106,39 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
           <p className="muted" style={{ fontSize: 12.5, marginBottom: 0, marginTop: 18 }}>
             Staff accounts only. Forgotten your password? Reset it from the phone app.
           </p>
+
+          {/* The credentials, where somebody signing in is actually looking.
+              They were only ever in docs/test-accounts.md, so `npm run dev`
+              opened a form with nothing to type into it. Dev builds only
+              (SHOW_DEMO_ACCOUNTS) — vite build strips this entirely. */}
+          {SHOW_DEMO_ACCOUNTS ? (
+            <div className="demo">
+              <p className="demo-head">
+                Demo accounts <span className="demo-tag">Dev only</span>
+              </p>
+              {DEMO_ACCOUNTS.map((account) => (
+                <button
+                  key={account.email}
+                  type="button"
+                  className="demo-row"
+                  disabled={busy}
+                  onClick={() => attempt(account.email, DEMO_PASSWORD)}
+                  aria-label={`Sign in as ${account.label}. ${account.hint}.`}
+                >
+                  <span className="demo-body">
+                    <span className="demo-label">{account.label}</span>
+                    <span className="demo-hint">{account.hint}</span>
+                  </span>
+                  <span className="demo-go">Sign in</span>
+                </button>
+              ))}
+              <p className="demo-foot">
+                Seeded by <code>scripts/seed-demo.sh</code>; every account{"'"}s password is{' '}
+                <code>{DEMO_PASSWORD}</code>. Members sign in on the phone app — see
+                docs/test-accounts.md.
+              </p>
+            </div>
+          ) : null}
         </form>
       </section>
     </div>
