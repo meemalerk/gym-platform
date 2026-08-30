@@ -1,119 +1,86 @@
 # Gym Platform
 
-Multi-tenant coaching and gym-management platform: gyms, coaches and members share one
-system; programmes are versioned and immutable once published; training history is
-append-only and progress is computed from it.
+A coaching and gym-management platform: one gym, its staff and its members. Coaches write
+versioned training programmes, members train against them on a phone, and the gym runs its
+roster, timetable, memberships and invoices from a web console. Training history is
+append-only, and progress is calculated from it rather than stored.
 
-**Just want to look at it?** [START-HERE.md](START-HERE.md) — install Docker, double-click
-one file, the whole system runs in your browser. Written for someone with no technical
-background; no toolchain, no database setup, no terminal.
+Two clients talk to one Rust API:
 
-**Start here (readers):**
+- **the app** — React Native (Expo), for members and floor trainers
+- **the console** — React + Vite, for owners and coaches
 
-- [docs/product-specification.md](docs/product-specification.md) — what this is, for whom, and what it deliberately is not
-- [docs/developer-guide.md](docs/developer-guide.md) — how to run it, how it is laid out, how to add a feature
-- [docs/delivery-stages.md](docs/delivery-stages.md) — the stages, what each one proves, what "done" means
-- [ORIGIN.md](ORIGIN.md) — where this codebase came from and the prototype→product pivot
-- [screenshots/README.md](screenshots/README.md) — the running system, every view per role
-- [docs/adr/README.md](docs/adr/README.md) — nineteen architecture decision records
-- [research/INDEX.md](research/INDEX.md) — the primary sources behind the design decisions
+---
 
-**Start here (contributors):** [CLAUDE.md](CLAUDE.md) is the working anchor — current
-status, locked decisions, invariants; the plan lives in [docs/](docs/).
-
-Status: **product development** — Phase 3 core complete (assignment & execution; offline
-transport still owed); next up: the product UI redesign, then entitlements/billing.
-
-## Stack
-
-| Layer | Choice |
-|-------|--------|
-| Backend | Rust 1.97 (edition 2024), Axum 0.8, SQLx 0.9, PostgreSQL 17 |
-| API docs | utoipa 5.5 → OpenAPI → generated TypeScript client |
-| Mobile | Expo SDK 54, React Native 0.81.5, React 19.1 |
-| Auth | Argon2id + short-lived access token + rotating refresh session |
-
-See [docs/tech-stack.md](docs/tech-stack.md) (its Expo figures still say 57 — the mobile app
-was downgraded to SDK 54 on 2026-08-22, see `CLAUDE.md`). Versions verified against the
-registries on 2026-07-18.
-
-## Run it without a toolchain
-
-For demos, or for anyone who just wants to look at it:
+## 1. Just look at it (nothing to install but Docker)
 
 ```bash
 docker compose -f docker-compose.demo.yml up --build
 ```
 
-Postgres, the API, the seed data and the app (exported for the browser) all come up together;
-open <http://localhost:8210>. Nothing else needs installing — no Rust, no Node, no database
-setup. [START-HERE.md](START-HERE.md) is the same thing written for a non-technical reader,
-with double-clickable launchers for Windows, macOS and Linux.
+Postgres, the API, demo data and the app all start together. Open <http://localhost:8210>.
+The first build takes a few minutes; after that it starts in seconds.
 
-**To show it to someone who has nothing installed** — including on an iPhone — run
-`bash demo/share.sh` (or double-click `share-demo.bat`). It opens a free Cloudflare quick
-tunnel and prints a public `https://` link plus a QR code. One tunnel covers both the app and
-the API because nginx proxies `/api` at the same origin, which is also why the bundle carries
-no absolute API URL. The link dies when you stop it.
+To stop it: `Ctrl+C`, then `docker compose -f docker-compose.demo.yml down`.
 
-> **For your own iPhone**, Expo Go now works directly: the app runs on SDK 54, matching Expo
-> Go's current App Store build. Run `npx expo start` in `apps/mobile` and scan the QR with
-> Expo Go or the Camera app — same Wi-Fi network as this machine. The tunnel/demo route above
-> is still the one to use for **someone else's** phone with nothing installed, or if the app
-> is ever moved off SDK 54 again (Expo now positions Expo Go as a learning tool rather than a
-> review surface, so a future SDK bump would need TestFlight instead).
+[START-HERE.md](START-HERE.md) is the same thing written for someone non-technical, with
+double-clickable launchers for Windows, macOS and Linux.
 
-To hand over the source instead: `bash demo/package.sh` writes a zip via `git archive`, so it
-carries the tracked files only — no `target/`, no `node_modules/`, and no `.env`.
+**To show it to someone else**, including on their phone: `bash demo/share.sh` (or
+double-click `share-demo.bat` on Windows). It opens a free Cloudflare tunnel and prints a
+public `https://` link and a QR code. The link works until you stop it. The card-payment
+page is the one screen a shared link cannot reach.
 
-## Signing in
+**To hand over the source**: `bash demo/package.sh` writes a zip of the tracked files only
+— no build output, no `node_modules`, no `.env`.
 
-Nothing here has a public sign-up worth using: the door is owner-controlled and default
-closed (ADR-0026), so use the seeded accounts. `bash scripts/seed-demo.sh` creates them,
-the browser demo runs it for you, and it is idempotent — re-running it is a no-op, not a
-second gym.
+---
 
-**The password for every account below is `demopassword`.** It is weak on purpose and only
-ever meets a local server.
+## 2. Signing in
 
-| Account | Holds | The app | The console | Worth signing in for |
-|---------|-------|:-------:|:-----------:|----------------------|
-| `owner@demo.test` | `owner` | yes | yes | Everything: roster, billing, the catalogue, the audit trail, publishing programmes |
-| `trainer@demo.test` | `trainer` | yes | yes | Sees **only their own clients** — not the gym roster |
-| `trainer2@demo.test` | `trainer` | yes | yes | The second trainer, and the reason the boundaries are visible: `trainer@`'s clients and class rosters are refused to them |
-| `member@demo.test` | `member` | yes | — | The data-rich one: programme, history, goals, measurements, a booked class |
-| `solo@demo.test` | `member` | yes | — | **No coach, Open Gym plan** — so Today offers *Start your own workout* (ADR-0035) |
+The demo data is built around a fixed set of accounts, so sign in as one of those rather
+than registering. The demo above creates them for you; if you are running things yourself,
+`bash scripts/seed-demo.sh` does it (safe to run more than once).
 
-Members can sign into the console, but there is nothing there for them — it is a staff
-tool, and it says so.
+You can also register a new account and look around as a member with no data — the demo
+leaves the door open on purpose. A real deployment keeps it shut unless the owner opens it.
 
-- **The app** — the browser demo on <http://localhost:8210>, or Expo Go. Its sign-in
-  screen carries a **row of one-tap buttons**, one per account, so there is nothing to
-  type. They are build-time gated (`__DEV__`, or `EXPO_PUBLIC_DEMO_ACCOUNTS=true`, which
-  only `demo/Dockerfile.web` sets), so a real release bundle contains neither the
-  addresses nor the password.
-- **The console** — <http://localhost:5174> after `npm run dev`. Same one-tap rows for
-  the three staff accounts, gated on `import.meta.env.DEV`, so `vite build` strips them.
+**The password for every account is `demopassword`.**
 
-Full detail — what each account demonstrates, which tabs each one sees, and why there are
-deliberately two trainers — is in [docs/test-accounts.md](docs/test-accounts.md).
+| Account | Role | App | Console | What it shows |
+|---------|------|:---:|:-------:|---------------|
+| `owner@demo.test` | owner | yes | yes | Everything: roster, billing, the exercise catalogue, the activity log, publishing programmes |
+| `trainer@demo.test` | trainer | yes | yes | Only their own clients — not the gym roster |
+| `trainer2@demo.test` | trainer | yes | yes | A second coach, so the boundaries are visible: the first coach's clients and class registers are refused |
+| `member@demo.test` | member | yes | — | The fullest account: programme, workout history, goals, measurements, a booked class |
+| `solo@demo.test` | member | yes | — | No coach and an Open Gym plan, so the app offers *Start your own workout* |
 
-## Prerequisites
+Both sign-in screens list the accounts as one-tap buttons, so there is nothing to type.
+Members can sign into the console but will find little there — it is a staff tool.
 
-- Rust 1.97 (pinned via `rust-toolchain.toml`)
-- Docker (for Postgres)
-- Node 22+ and npm (for the mobile app and the console; both carry a `package-lock.json`)
+More detail on what each account demonstrates: [docs/test-accounts.md](docs/test-accounts.md).
 
-## Quick start
+---
+
+## 3. Run it yourself
+
+### Prerequisites
+
+- **Rust 1.97** — the exact version is pinned in `rust-toolchain.toml`, so `rustup` fetches
+  it for you
+- **Docker** — for PostgreSQL
+- **Node 22 or newer** and npm — for the two clients
+
+### Start the API
 
 ```bash
-# 1. Start Postgres (host port 5455 — chosen to avoid clashing with other local DBs)
+# 1. PostgreSQL (host port 5455, so it will not clash with a Postgres you already run)
 docker compose up -d postgres
 
-# 2. Configure
+# 2. Configuration
 cp .env.example .env
 
-# 3. Apply migrations
+# 3. Apply the migrations
 cargo install sqlx-cli --no-default-features --features rustls,postgres --locked
 export DATABASE_URL="postgres://gym:gym_dev_password@localhost:5455/gym"
 sqlx migrate run --source ./migrations
@@ -124,195 +91,134 @@ cargo run --bin server
 
 Then:
 
-- http://localhost:8080/health — liveness
-- http://localhost:8080/ready — readiness (checks the database)
-- http://localhost:8080/swagger-ui — API explorer
-- http://localhost:8080/api-docs/openapi.json — OpenAPI document
+- <http://localhost:8080/health> — liveness
+- <http://localhost:8080/ready> — readiness, including the database
+- <http://localhost:8080/swagger-ui> — browse and call the API
+- <http://localhost:8080/api-docs/openapi.json> — the OpenAPI document
 
-**Step 3 is not optional the first time.** `sqlx::query!` macros are checked against the
-live schema *at compile time*, so `cargo run` against a database with no tables fails to
-**build** — a wall of `relation "programs" does not exist` errors — and never gets far
-enough to apply its own migrations. Run the migrations first, or build against the
-committed offline cache instead (`SQLX_OFFLINE=true cargo run --bin server`, which needs
-no database at compile time).
-
-Once the schema exists the server does apply pending migrations on boot, so later
-migrations need no separate step.
-
-## Development
+Finally, create the demo accounts and data:
 
 ```bash
-cargo test --workspace                              # unit tests
-cargo clippy --workspace --all-targets -- -D warnings
-cargo fmt --all
+bash scripts/seed-demo.sh
 ```
 
-**`DATABASE_URL` must be set to build**, because `sqlx::query!` macros are checked against
-the live schema at compile time. To build without a database (e.g. in CI), commit the
-offline query cache:
+> **Step 3 is not optional the first time.** The SQL in this project is checked against a
+> real schema *while it compiles*, so building against an empty database fails with a wall
+> of `relation "..." does not exist` before the server ever starts. Either apply the
+> migrations first, or build against the checked-in query cache with
+> `SQLX_OFFLINE=true cargo run --bin server`. Once the schema exists, the server applies any
+> new migrations itself at startup.
+
+### Start the console
 
 ```bash
-cargo sqlx prepare --workspace
-SQLX_OFFLINE=true cargo check --workspace
+cd apps/console
+npm install
+npm run dev
 ```
 
-## Mobile app (Expo SDK 54)
+Open <http://localhost:5174>. It expects the API on port 8080 and forwards `/api` to it, so
+there is no address to configure.
 
-The member and floor-trainer client. Needs the API running (see **Quick start** above).
+### Start the app
 
 ```bash
 cd apps/mobile
-npm install --legacy-peer-deps   # a transitive peer pulls in react-native-windows; see CLAUDE.md
-npm run typecheck                # tsc --noEmit
-npm start                        # Expo dev server — press w for web, i/a for a simulator
+npm install --legacy-peer-deps
+npm start
 ```
 
-**On a physical phone**, scan the QR from `npm start` with **Expo Go** (App Store /
-Play Store) — the app is on SDK 54, which matches Expo Go's current build, so no custom
-dev client, Apple Developer account or EAS build is needed. The phone and this machine
-must be on the same Wi-Fi. `expo-dev-client` is still installed for standalone builds
-(`npx expo run:ios` / `run:android`) if you need one.
+Press `w` for a browser, `i` or `a` for a simulator, or scan the QR code with **Expo Go**
+(App Store / Play Store) to run it on a real phone. No Apple Developer account or custom
+build is needed.
 
-A physical device cannot reach the host's `localhost`, so point it at this machine's LAN
-address:
+**On a real phone**, the phone and this computer must be on the same Wi-Fi, and the phone
+cannot reach `localhost` — that would be the phone itself. Point the app at this computer's
+address on the network:
 
 ```bash
-EXPO_PUBLIC_API_URL=http://192.168.1.5:8080 npm start
+# find your address:
+#   Windows   ipconfig                 (look for IPv4 Address)
+#   macOS     ipconfig getifaddr en0
+#   Linux     hostname -I
+EXPO_PUBLIC_API_URL=http://YOUR-ADDRESS:8080 npm start
 ```
 
-Regenerate the API types whenever the backend contract changes (server must be running).
-The mobile default is port **8092** — the layout `scripts/dev-phone.sh` uses — so point it
-at a Quick-start server on 8080 with `API_PORT`:
+If the phone cannot connect, it is almost always a firewall blocking incoming connections
+to ports 8081 and 8080 on this computer.
+
+### Keeping the clients in step with the API
+
+The clients derive their types from the API's OpenAPI document, so a backend change becomes
+a compile error rather than a surprise at runtime. With the server running:
 
 ```bash
-API_PORT=8080 npm run codegen:api   # writes src/api/schema.d.ts from /api-docs/openapi.json
+cd apps/console && npm run codegen:api            # writes src/lib/schema.d.ts
+cd apps/mobile  && API_PORT=8080 npm run codegen:api   # writes src/api/schema.d.ts
 ```
 
-`src/api/gym.ts` **derives its types from that generated schema**, so a backend contract
-change becomes a TypeScript error rather than a runtime failure on a phone.
+---
 
-## Console (web app for owners & coaches)
+## 4. Testing it
 
-The React + Vite back-office client ([ADR-0009](docs/adr/0009-client-stack.md)) — billing
-ledgers, rosters, catalogue review: the work a phone is worst at. Needs the API running.
-
-```bash
-# 1. Start the API on :8080 (the port the console's dev server proxies to)
-cargo run --bin server
-
-# 2. Start the console
-cd apps/console
-npm install
-npm run dev                # http://localhost:5174 — proxies /api to :8080
-```
-
-Same-origin in development (Vite proxies `/api`) and in the demo (nginx does), so there is
-**no absolute API URL and no CORS entry** to keep in step. Sign in with a seeded account
-(`bash scripts/seed-demo.sh`, then [docs/test-accounts.md](docs/test-accounts.md)).
-
-Keeping it honest:
-
-```bash
-npm run typecheck          # part of scripts/all-check.sh
-npm run tokens             # regenerate src/tokens.css after a palette change
-npm run codegen:api        # regenerate src/lib/schema.d.ts against a running API
-```
-
-`src/tokens.css` is **generated** from `apps/mobile/src/ui/theme.ts`; `all-check.sh`
-regenerates it and fails if the checked-in file drifts, so the two clients cannot disagree
-about colour or shape.
-
-## Layout
-
-```
-crates/
-  domain/          pure types + invariants (no I/O)
-  application/     use-cases + ports (traits)
-  infrastructure/  adapters: Postgres repos, Argon2 hashing, JWT issuing
-  api/             Axum router, extractors, Problem Details errors, OpenAPI
-bins/server/       entrypoint: config, wiring, graceful shutdown
-migrations/        sqlx migrations (never edit an applied one — add a new one)
-apps/mobile/       Expo SDK 54 app (expo-router, TanStack Query, Zustand)
-apps/console/      React + Vite web app for owners & coaches (TanStack, shared tokens)
-scripts/           verification suites (all-check.sh runs the lot) + seed-demo.sh
-docs/              the plan; docs/adr/ holds the decisions
-screenshots/       captures of every view, per role (see its README)
-research/          cited primary sources as PDFs (see INDEX.md)
-```
-
-## Verification
-
-One gate runs everything ([ADR-0019](docs/adr/0019-verification-first-development.md)):
+One command runs everything. It needs the database from step 1 running, plus Node:
 
 ```bash
 bash scripts/all-check.sh
 ```
 
-Around 1,450 assertions. First the Rust gate — `cargo fmt`, `cargo clippy --all-targets
--D warnings`, the sqlx offline cache, and 283 workspace unit tests. Then 57 e2e HTTP
-assertions (which pin the published OpenAPI path count at 79, so adding a route is a
-conscious edit) and the per-feature suites against a live server and database: standing
-47, RLS 7, audit 17, programme immutability 22, programme authoring 59, coaching 52,
-coaching requests 38, assignments 31, execution 39, unplanned sessions 42, profiles 38,
-goals 20, recommendations 15, billing 62, entitlements 35, check-ins 29, trainer
-authority 36, open registration 30, athlete view 25, worker 31, payments 36, auth
-hardening 36, calendar 51, classes 51. Then the pure-logic node suites, which need
-neither server nor renderer: navigation 119, routing 39, attendance 44, activity 42,
-progress 35, timetable 33, prescription rendering 33, today 31, plates 18, entitlement
-wording 22, session naming 12, palette contrast 100, design consistency 10, doc links 5.
-Finally `tsc --noEmit` for both clients, and a check that `apps/console/src/tokens.css`
-still regenerates identically from the mobile theme.
+That is around 1,450 assertions: formatting, lint, 283 unit tests, then per-feature suites
+that start a real server against a real database and check both what must work and what
+must be **refused** — tenant isolation, permissions, billing, programme immutability,
+bookings — and typechecks for both clients. Individual suites live in `scripts/` and can be
+run on their own, for example `bash scripts/verify-billing.sh`.
 
-**`expo-doctor` and a real `expo export` bundle run in CI, not in this gate** — they cost
-minutes and need a network.
+`.github/workflows/ci.yml` runs a subset of the same suites on every push.
 
-**On Windows, running this stops any dev server you have running.** Each suite reaps stray
-`server.exe` processes before building, because a running binary holds
-`target/debug/server.exe` open and the next `cargo build` would silently keep a stale one.
-The reap matches by image name, so it cannot tell your dev server from a leftover.
+> On Windows this stops any development server you have running: each suite clears stray
+> `server.exe` processes before rebuilding, and it cannot tell yours from a leftover.
 
-Suites build before running — a stale binary makes results meaningless. Negative cases
-(what must be *refused*) are asserted as deliberately as happy paths. CI
-(`.github/workflows/ci.yml`) runs a **subset**, not the lot: fmt/clippy/tests, e2e, RLS,
-standing, audit, the refresh-rotation race, and the mobile typecheck/doctor/bundle. Demo
-data: `bash scripts/seed-demo.sh`, then see [docs/test-accounts.md](docs/test-accounts.md).
+---
 
-### Running the app in a browser (no simulator needed)
+## 5. Layout
 
-The web target is a **development/verification convenience only** — the production client is
-native, and per [ADR-0009](docs/adr/0009-client-stack.md) the real browser app is a separate
-React + Vite project.
-
-```bash
-# API must allow the web origin explicitly (CORS is closed by default)
-CORS_ALLOWED_ORIGINS=http://localhost:8210 cargo run --bin server   # :8080
-
-cd apps/mobile
-EXPO_PUBLIC_API_URL=http://localhost:8080 npx expo start --web --port 8210
+```
+crates/
+  domain/          types and rules, no I/O
+  application/     use-cases and the interfaces they need
+  infrastructure/  PostgreSQL, password hashing, token issuing
+  api/             HTTP routes, errors, OpenAPI
+bins/server/       the API entrypoint
+bins/worker/       background jobs: recurring billing, overdue notices
+migrations/        database schema, applied in order
+apps/mobile/       the app (Expo)
+apps/console/      the console (React + Vite)
+scripts/           test suites, plus seed-demo.sh
+docs/              product and architecture documentation
 ```
 
-**WSL note:** Metro binds IPv6 (`::`), and WSL2's `localhostForwarding` only creates a relay
-for IPv4 binds — so the Windows browser cannot reach it. Put an IPv4 listener in front
-(`scripts/ipv4-proxy.mjs`). Also check your ports: on this machine 8080 is taken by a Windows
-service and 8081 by another project's Metro.
+Dependencies point one way: `api` uses `application`, which uses `domain`.
 
-On web, the refresh token falls back to `sessionStorage` (see `src/session/secure-storage.ts`)
-because `expo-secure-store` does not exist on web. That is **not** a production-safe pattern —
-a real browser client must use the BFF/HttpOnly-cookie approach.
+---
 
-Dependency direction is strict: `api → application → domain`; `infrastructure` implements
-ports declared by `application`. See [docs/architecture.md](docs/architecture.md).
+## 6. If something goes wrong
 
-## Conventions that matter
+| Symptom | Cause |
+|---------|-------|
+| `cargo run` fails with `relation "..." does not exist` | The migrations have not been applied — see the note in step 3 |
+| `port is already allocated` | Something else is using 5455, 8080, 8081, 5174, 8210 or 8211. Stop it, or change the port in `docker-compose.yml` or in the command you are running |
+| The console loads but cannot sign in | The API is not running on port 8080 |
+| The phone cannot reach the app, or times out | Wrong network, or a firewall blocking ports 8081 and 8080 |
+| The browser demo shows an empty page | Give it a moment on first start, then reload; `docker compose -f docker-compose.demo.yml logs` shows what each part is doing |
+| A test suite reports every check as failed | The database is not running: `docker compose up -d postgres` |
 
-- **Tenant context is non-optional.** Repository methods take `(&TenantContext, id)`, never
-  a bare id — this is the application half of [ADR-0004](docs/adr/0004-postgres-shared-schema-multitenancy.md).
-- **Never serialize DB rows to clients.** Row structs are private; API types are separate.
-- **Clients branch on the error `code` field**, never on human-readable messages.
-- **Secrets never in git.** `.env` is ignored; `.env.example` documents the shape.
-- **Refresh rotation is compare-and-swap.** `SessionRepository::revoke` returns whether *this*
-  call performed the revocation; losing that race is treated as token theft and burns the
-  family. Read-then-write here is a security bug — it let two concurrent refreshes both
-  succeed (caught by `scripts/verify-refresh-hazard.mjs`).
-- **The mobile client de-duplicates concurrent refreshes** (`refreshOnce`). Without it, two
-  simultaneous 401s sign the user out of every device.
+---
+
+## 7. Reading further
+
+- [docs/product-specification.md](docs/product-specification.md) — what the product does, and what it deliberately does not
+- [docs/developer-guide.md](docs/developer-guide.md) — how the code is organised and how to add a feature
+- [docs/architecture.md](docs/architecture.md) — the shape of the system
+- [docs/adr/README.md](docs/adr/README.md) — why the significant choices were made
+- [screenshots/README.md](screenshots/README.md) — every screen, per role
+- [CLAUDE.md](CLAUDE.md) — working notes for anyone changing the code
