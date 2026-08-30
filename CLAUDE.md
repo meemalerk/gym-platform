@@ -234,9 +234,10 @@ history, not a target), then entitlements/billing. Check the "Current phase" mar
 [docs/roadmap.md](docs/roadmap.md) before starting implementation work, and see
 [README.md](README.md) for how to run things.
 
-Working today (all verified against a live database — `scripts/all-check.sh` runs **33
-suites**: 250 unit tests (215 domain), 57 e2e assertions over 72 OpenAPI paths, plus the
-per-feature verify scripts listed below. Everything green as of 2026-08-24):
+Working today (all verified against a live database — `scripts/all-check.sh` runs **39
+reporting suites**: 283 unit tests (248 domain), 57 e2e assertions over **79** OpenAPI
+paths, and roughly 1,450 assertions in total across the per-feature verify scripts listed
+below. Everything green as of 2026-08-31, measured on Windows):
 
 **Added 2026-08-24** — each with an ADR and an executable suite:
 
@@ -276,8 +277,9 @@ per-feature verify scripts listed below. Everything green as of 2026-08-24):
   reported passes it had never run. Two `.mjs` scripts crashed on
   `new URL(...).pathname`.
 
-- Cargo workspace `crates/{domain,application,infrastructure,api}` + `bins/server`.
-  No `worker` crate yet — it arrives when there are outbox events to drain.
+- Cargo workspace `crates/{domain,application,infrastructure,api}` + `bins/{server,worker}`.
+  The `worker` crate arrived with ADR-0027's outbox (see the 2026-08-24 list above); this
+  line said it did not exist yet for some time after it did.
 - Postgres 17 via `docker-compose` on **host port 5455** (5432/5433 are taken by other
   projects on this machine). Migration `20260718000001_init`: gyms, users, memberships,
   exercises, sessions.
@@ -569,6 +571,46 @@ per-feature verify scripts listed below. Everything green as of 2026-08-24):
   management controls — a button that exists only to produce a 403 teaches the user the
   software is broken rather than that the action is not theirs.
 
+**Fixed 2026-08-31** — a from-scratch audit of every path the README documents. Nothing
+new was built; six things that were already broken were found by running them:
+
+- **The demo did not come up at all on Windows.** `core.autocrlf=true` (git's default
+  there) with no `.gitattributes` checks `scripts/seed-demo.sh` out with CRLF, and
+  `demo/Dockerfile.seed` copies it into a Linux image where bash reads the trailing CR as
+  part of every token: `set: pipefail: invalid option name`, then a syntax error on the
+  first for-loop. Seed exits 2, `web` waits on seed completing, and the README's headline
+  command left **nothing** on :8210. Invisible on Linux and macOS, which is why CI never
+  saw it. Now fixed twice over: `.gitattributes` pins anything a Linux shell, Docker or
+  nginx reads to LF (and the Windows launchers to CRLF), and the seed image strips CR
+  after COPY so a tree cloned before that file still builds. **Do not remove either.**
+- **CI could not have passed, three ways**: `cargo fmt --all --check` failed on 18 files;
+  clippy `-D warnings` failed on three lints; and the e2e job still ran
+  `scripts/verify-invitations.sh`, deleted with the feature in ADR-0031.
+- **`scripts/e2e.sh` pinned the OpenAPI path count at 73 while the API served 79** — the
+  six being group classes (5, ADR-0033) and `coaching-requests/propose` (1, ADR-0034).
+  The tripwire worked; nobody had run it. Pin and ledger updated.
+- **`npm run codegen:api` could not run on Windows** in either client: `${API_PORT:-8080}`
+  is POSIX expansion and npm runs scripts through cmd.exe, so the literal string reached
+  openapi-typescript (`ERR_INVALID_URL`). Both now call `scripts/codegen-api.mjs`.
+  Regenerating produced no diff, so the committed API types were in step.
+- **`bash demo/share.sh` exited 1 on Windows** — the arch switch had no MinGW arm, with
+  `demo/.bin/cloudflared.exe` already present. `share.ps1` had always worked.
+- **The logins were not written down where anyone would look.** The console opened on a
+  bare form; the README never said what to sign in with; `START HERE.html` (what ships in
+  the handover zip) listed seven accounts of which four do not exist, and told the reader
+  to sign in as `headcoach@` and to "switch gyms" as `multi@` — contradicting ADR-0036 and
+  ADR-0023. Both twins also still said invitations were sent and accepted, and listed
+  class booking and card payment as not built (ADR-0033 and ADR-0028 shipped both).
+
+Two things worth carrying forward. `all-check.sh` runs `cargo fmt` and `cargo sqlx
+prepare` rather than `--check`-ing them, so it **repairs** drift in your working tree
+instead of failing on it — which is exactly how a stale `.sqlx` cache and 18 unformatted
+files reached a state where only CI would have complained. And on Windows every verify
+suite reaps `server.exe` **by image name**, so running the gate stops the dev server your
+phone or the console is talking to; that is deliberate (a running binary holds
+`target/debug/server.exe` open and the next `cargo build` silently keeps a stale one), but
+`all-check.sh`'s own note used to claim the opposite.
+
 **On versions — read before "updating" anything:** crates are all on latest *stable*
 (`argon2` stays 0.5.3 because 0.6 is a release candidate). Mobile packages are pinned by
 **Expo SDK 54's `bundledNativeModules.json`, which is authoritative** — npm may show newer
@@ -589,8 +631,15 @@ Deliberately not built yet: the offline operation-log transport (the idempotent 
 exists; the queue does not), OpenFGA (deferred —
 [ADR-0013](docs/adr/0013-mvp-application-layer-authorization.md)), push notifications (the outbox they were waiting on
 now exists too — see UX-2b), a real SMTP adapter behind the `EmailSender` port, dunning
-and suspension (the entitlement resolver is the one place they will change), and CI on a
-real remote (the workflow file exists; no GitHub remote is configured). Person-owned tables (users, sessions,
+and suspension (the entitlement resolver is the one place they will change).
+
+**CI has a real remote now**: `origin` is github.com/meemalerk/gym-platform, and
+`.github/workflows/ci.yml` runs a SUBSET of the gate on push (fmt, clippy, tests, e2e,
+RLS, standing, audit, the refresh-rotation race, and the mobile typecheck/doctor/bundle).
+This file used to say no remote was configured, which is part of how three failing CI
+steps survived unnoticed — see 2026-08-31 above.
+
+Person-owned tables (users, sessions,
 profiles, measurements) are deliberately **outside RLS** — the service layer is the only
 wall there, which is why every profile/measurement query filters by the authenticated
 user id.
