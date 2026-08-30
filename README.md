@@ -66,11 +66,43 @@ no absolute API URL. The link dies when you stop it.
 To hand over the source instead: `bash demo/package.sh` writes a zip via `git archive`, so it
 carries the tracked files only — no `target/`, no `node_modules/`, and no `.env`.
 
+## Signing in
+
+Nothing here has a public sign-up worth using: the door is owner-controlled and default
+closed (ADR-0026), so use the seeded accounts. `bash scripts/seed-demo.sh` creates them,
+the browser demo runs it for you, and it is idempotent — re-running it is a no-op, not a
+second gym.
+
+**The password for every account below is `demopassword`.** It is weak on purpose and only
+ever meets a local server.
+
+| Account | Holds | The app | The console | Worth signing in for |
+|---------|-------|:-------:|:-----------:|----------------------|
+| `owner@demo.test` | `owner` | yes | yes | Everything: roster, billing, the catalogue, the audit trail, publishing programmes |
+| `trainer@demo.test` | `trainer` | yes | yes | Sees **only their own clients** — not the gym roster |
+| `trainer2@demo.test` | `trainer` | yes | yes | The second trainer, and the reason the boundaries are visible: `trainer@`'s clients and class rosters are refused to them |
+| `member@demo.test` | `member` | yes | — | The data-rich one: programme, history, goals, measurements, a booked class |
+| `solo@demo.test` | `member` | yes | — | **No coach, Open Gym plan** — so Today offers *Start your own workout* (ADR-0035) |
+
+Members can sign into the console, but there is nothing there for them — it is a staff
+tool, and it says so.
+
+- **The app** — the browser demo on <http://localhost:8210>, or Expo Go. Its sign-in
+  screen carries a **row of one-tap buttons**, one per account, so there is nothing to
+  type. They are build-time gated (`__DEV__`, or `EXPO_PUBLIC_DEMO_ACCOUNTS=true`, which
+  only `demo/Dockerfile.web` sets), so a real release bundle contains neither the
+  addresses nor the password.
+- **The console** — <http://localhost:5174> after `npm run dev`. Same one-tap rows for
+  the three staff accounts, gated on `import.meta.env.DEV`, so `vite build` strips them.
+
+Full detail — what each account demonstrates, which tabs each one sees, and why there are
+deliberately two trainers — is in [docs/test-accounts.md](docs/test-accounts.md).
+
 ## Prerequisites
 
 - Rust 1.97 (pinned via `rust-toolchain.toml`)
 - Docker (for Postgres)
-- Node 22+ and pnpm (for the mobile app, later)
+- Node 22+ and npm (for the mobile app and the console; both carry a `package-lock.json`)
 
 ## Quick start
 
@@ -97,8 +129,15 @@ Then:
 - http://localhost:8080/swagger-ui — API explorer
 - http://localhost:8080/api-docs/openapi.json — OpenAPI document
 
-The server applies pending migrations on boot, so step 3 is only needed if you want to
-migrate without starting the server.
+**Step 3 is not optional the first time.** `sqlx::query!` macros are checked against the
+live schema *at compile time*, so `cargo run` against a database with no tables fails to
+**build** — a wall of `relation "programs" does not exist` errors — and never gets far
+enough to apply its own migrations. Run the migrations first, or build against the
+committed offline cache instead (`SQLX_OFFLINE=true cargo run --bin server`, which needs
+no database at compile time).
+
+Once the schema exists the server does apply pending migrations on boot, so later
+migrations need no separate step.
 
 ## Development
 
@@ -141,10 +180,12 @@ address:
 EXPO_PUBLIC_API_URL=http://192.168.1.5:8080 npm start
 ```
 
-Regenerate the API types whenever the backend contract changes (server must be running):
+Regenerate the API types whenever the backend contract changes (server must be running).
+The mobile default is port **8092** — the layout `scripts/dev-phone.sh` uses — so point it
+at a Quick-start server on 8080 with `API_PORT`:
 
 ```bash
-npm run codegen:api        # writes src/api/schema.d.ts from /api-docs/openapi.json
+API_PORT=8080 npm run codegen:api   # writes src/api/schema.d.ts from /api-docs/openapi.json
 ```
 
 `src/api/gym.ts` **derives its types from that generated schema**, so a backend contract
@@ -207,17 +248,34 @@ One gate runs everything ([ADR-0019](docs/adr/0019-verification-first-developmen
 bash scripts/all-check.sh
 ```
 
-16 suites: 163 workspace unit tests; 49 e2e HTTP assertions (pinning the OpenAPI path
-count); and per-feature suites against the live server and database — RLS 7,
-invitations 22, audit 18, programme immutability 22, programme authoring 55,
-coaching 41, assignments 24, execution 39, profiles/measurements 38, goals 20,
-recommendations 15, navigation 252, activity 42, progress 35, formatting/timers 33 —
-plus `tsc --noEmit`, `expo-doctor`, and a real `expo export` bundle.
+Around 1,450 assertions. First the Rust gate — `cargo fmt`, `cargo clippy --all-targets
+-D warnings`, the sqlx offline cache, and 283 workspace unit tests. Then 57 e2e HTTP
+assertions (which pin the published OpenAPI path count at 79, so adding a route is a
+conscious edit) and the per-feature suites against a live server and database: standing
+47, RLS 7, audit 17, programme immutability 22, programme authoring 59, coaching 52,
+coaching requests 38, assignments 31, execution 39, unplanned sessions 42, profiles 38,
+goals 20, recommendations 15, billing 62, entitlements 35, check-ins 29, trainer
+authority 36, open registration 30, athlete view 25, worker 31, payments 36, auth
+hardening 36, calendar 51, classes 51. Then the pure-logic node suites, which need
+neither server nor renderer: navigation 119, routing 39, attendance 44, activity 42,
+progress 35, timetable 33, prescription rendering 33, today 31, plates 18, entitlement
+wording 22, session naming 12, palette contrast 100, design consistency 10, doc links 5.
+Finally `tsc --noEmit` for both clients, and a check that `apps/console/src/tokens.css`
+still regenerates identically from the mobile theme.
+
+**`expo-doctor` and a real `expo export` bundle run in CI, not in this gate** — they cost
+minutes and need a network.
+
+**On Windows, running this stops any dev server you have running.** Each suite reaps stray
+`server.exe` processes before building, because a running binary holds
+`target/debug/server.exe` open and the next `cargo build` would silently keep a stale one.
+The reap matches by image name, so it cannot tell your dev server from a leftover.
 
 Suites build before running — a stale binary makes results meaningless. Negative cases
-(what must be *refused*) are asserted as deliberately as happy paths. CI runs the same
-set (`.github/workflows/ci.yml`). Demo data: `bash scripts/seed-demo.sh`, then see
-[docs/test-accounts.md](docs/test-accounts.md).
+(what must be *refused*) are asserted as deliberately as happy paths. CI
+(`.github/workflows/ci.yml`) runs a **subset**, not the lot: fmt/clippy/tests, e2e, RLS,
+standing, audit, the refresh-rotation race, and the mobile typecheck/doctor/bundle. Demo
+data: `bash scripts/seed-demo.sh`, then see [docs/test-accounts.md](docs/test-accounts.md).
 
 ### Running the app in a browser (no simulator needed)
 

@@ -95,9 +95,11 @@ If you would rather type them, the password for every account is
 
 | Account | Who they are | Worth looking at |
 |---------|--------------|------------------|
-| `owner@demo.test` | Runs the gym | Members, invitations, the audit trail, billing, writing programmes |
-| `trainer@demo.test` | Coaches a handful of members | Sees **only their own clients**, nobody else's |
-| `member@demo.test` | Trains at the gym | **The richest account** — workout history, progress charts, goals, measurements |
+| `owner@demo.test` | Runs the gym | The member roster, the money, the audit trail, and writing and publishing training programmes |
+| `trainer@demo.test` | Coaches some of the members | Sees **only their own clients**, nobody else's — try it and compare with the owner |
+| `trainer2@demo.test` | The other coach | The point of a second one: `trainer@`'s clients and class registers are refused to them |
+| `member@demo.test` | Trains at the gym | **The fullest account** — workout history, progress, goals, measurements, a booked class |
+| `solo@demo.test` | Trains at the gym, no coach | Nobody writes them a plan, so the app offers *Start your own workout* instead
 
 ---
 
@@ -167,15 +169,16 @@ docker compose -f docker-compose.demo.yml logs
 ## What you are looking at
 
 Everything on screen is real. The demo data was created through the app's own
-front door — the accounts really did sign up, the invitations really were sent
-and accepted, the workouts really were logged. Nothing was pasted into a
+front door — the accounts really did sign up at the open door, their
+standing really was granted from the roster, the workouts really were logged. Nothing was pasted into a
 database behind the app's back.
 
-A few things are deliberately *not* built yet, so you will not find them:
-class booking and timetables, nutrition plans, and card payments — invoices and
-payments are recorded, but no real money moves. Nobody is chased for an unpaid
-bill either: an overdue member can still train, on purpose, until that decision
-is made properly.
+One thing is deliberately *not* built, and will not be: nutrition and meal
+plans. The rest is here, including the class timetable, booking a place in a
+class, and paying an invoice by card — though the card page is a stand-in for a
+bank, so **no real money moves**. Nobody is chased for an unpaid bill either: an
+overdue member can still train, on purpose, until that decision is made
+properly.
 
 This browser version exists so the app can be looked at without a phone. The
 product itself is a phone app; a few things (haptic feedback, the secure key

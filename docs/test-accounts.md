@@ -42,7 +42,10 @@ may not do.**
 ### Signing in to the console
 
 The console (`apps/console`, `npm run dev` → http://localhost:5174) takes the same
-accounts. Its navigation turns on two derived rights rather than on role names:
+accounts. Its sign-in screen offers the three **staff** accounts as one-tap rows, the
+way the phone app does — gated on `import.meta.env.DEV`, so `vite build` strips the
+list and the password out of a production bundle entirely. A member may sign in there
+too; they simply find Overview and an empty client list. Its navigation turns on two derived rights rather than on role names:
 
 - **`manages`** = `owner` → Billing, Activity, Settings
 - **`curates`** = `manages` → Catalogue

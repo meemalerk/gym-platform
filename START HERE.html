@@ -175,29 +175,29 @@
 
 <table>
   <tr><th>Account</th><th>Who they are</th><th>Worth seeing</th></tr>
-  <tr><td><code>owner@demo.test</code></td><td>Runs the gym</td><td>Members, invitations, the audit trail, all the billing screens</td></tr>
-  <tr><td><code>headcoach@demo.test</code></td><td>Writes the programmes</td><td>Writing and publishing a training programme</td></tr>
-  <tr><td><code>trainer@demo.test</code></td><td>Coaches a few members</td><td>Sees <em>only their own clients</em> — nobody else's</td></tr>
-  <tr><td><code>member@demo.test</code></td><td>Trains at the gym</td><td><strong>The richest one</strong> — workout history, progress, goals</td></tr>
-  <tr><td><code>multi@demo.test</code></td><td>One person, three gyms</td><td>A different role in each. Tap the gym name to switch</td></tr>
-  <tr><td><code>admin@demo.test</code></td><td>Runs it, does not own it</td><td>Also owns a second gym — nothing leaks between them</td></tr>
-  <tr><td><code>newbie@demo.test</code></td><td>Belongs to no gym</td><td>What a brand-new sign-up sees</td></tr>
+  <tr><td><code>owner@demo.test</code></td><td>Runs the gym</td><td>The roster, the audit trail, the billing screens, and writing programmes</td></tr>
+  <tr><td><code>trainer@demo.test</code></td><td>Coaches some members</td><td>Sees <em>only their own clients</em> — nobody else's</td></tr>
+  <tr><td><code>trainer2@demo.test</code></td><td>The other coach</td><td>Why a second one matters: the first coach's clients and class registers are refused to them</td></tr>
+  <tr><td><code>member@demo.test</code></td><td>Trains at the gym</td><td><strong>The fullest one</strong> — workout history, progress, goals, a booked class</td></tr>
+  <tr><td><code>solo@demo.test</code></td><td>Trains there, no coach</td><td>Nobody writes them a plan, so the app offers <em>Start your own workout</em></td></tr>
 </table>
 
 <h2><span class="num">4</span>Five things worth trying</h2>
 
 <ol class="steps">
-  <li><strong>1. Write a training programme.</strong> As <code>headcoach@</code>: Today →
-      <em>Programmes</em> → the <strong>+</strong> button. Add a week, add a workout, add
+  <li><strong>1. Write a training programme.</strong> As <code>owner@</code>: Today —
+      <em>Programmes</em> — the <strong>+</strong> button. Add a week, add a workout, add
       exercises. Notice the form changes depending on how the movement is measured. Then submit
-      it for review — <em>someone else</em> has to approve it. You cannot sign off your own work.</li>
+      it for review and approve it yourself: this gym has a single owner and nobody else who
+      could review, so self-approval is allowed here rather than blocked.</li>
   <li><strong>2. Log a workout.</strong> As <code>member@</code>, tap <em>Continue</em> on Today
       and log some sets. There is a rest timer and a session clock.</li>
   <li><strong>3. Watch the app change shape.</strong> Sign in as <code>owner@</code>, then as
       <code>member@</code>. The buttons along the bottom are different — the app rebuilds itself
       around what you are allowed to do, rather than greying things out.</li>
-  <li><strong>4. Switch gyms.</strong> As <code>multi@</code>, tap the gym name at the top. Same
-      login, different gym, different role — and none of the three can see each other's data.</li>
+  <li><strong>4. See a coach's narrow view.</strong> As <code>trainer@</code>, open
+      <em>People</em>: only their own client is there. Then sign in as <code>trainer2@</code>,
+      who coaches nobody, and the same screen is empty — the wall is real, not hidden buttons.</li>
   <li><strong>5. See who did what.</strong> As <code>owner@</code>, open <em>Activity</em>. Every
       change anyone made is recorded there and cannot be edited afterwards.</li>
 </ol>
@@ -246,15 +246,16 @@
 
 <p>
   Everything on screen is real. The demo data was created through the app's own front door — the
-  accounts really did sign up, the invitations really were sent and accepted, the workouts really
-  were logged. Nothing was pasted into a database behind the app's back.
+  accounts really did sign up at the open door, their standing really was granted from the
+  roster, the workouts really were logged. Nothing was pasted into a database behind the app's back.
 </p>
 
 <p>
-  A few things are deliberately <em>not</em> built yet, so you will not find them: class booking
-  and timetables, nutrition plans, and card payments. Invoices and payments are recorded, but no
-  real money moves. Nobody is chased for an unpaid bill either — an overdue member can still
-  train, on purpose, until that decision is made properly.
+  One thing is deliberately <em>not</em> built, and will not be: nutrition and meal plans. The
+  rest is here — including the class timetable, booking a place in a class, and paying an
+  invoice by card. The card page is a stand-in for a bank, so <strong>no real money moves</strong>.
+  Nobody is chased for an unpaid bill either — an overdue member can still train, on purpose,
+  until that decision is made properly.
 </p>
 
 <p>
