@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { ApiError } from '@/api/client';
 import { signIn } from '@/api/gym';
+import { API_URL, isLoopbackApi } from '@/config';
 import { DEMO_ACCOUNTS, DEMO_PASSWORD, SHOW_DEMO_ACCOUNTS } from '@/dev/demo-accounts';
 import { Appear, Button, ErrorBanner, Field, Touchable } from '@/ui/components';
 import { fonts, type Tokens } from '@/ui/theme';
@@ -51,7 +52,14 @@ export default function SignIn() {
             // worst possible advice here.
             error instanceof ApiError && error.code === 'auth.too_many_attempts'
             ? 'Too many attempts. Wait a few minutes and try again, or reset your password.'
-            : 'Could not sign in. Please try again.',
+            : error instanceof ApiError && error.code === 'network.unreachable'
+              ? // Nothing answered, so nothing judged these credentials. Say so,
+                // and on a device name the likeliest cause: a build pointed at
+                // `localhost` is pointed at the phone itself, where no API runs.
+                isLoopbackApi
+                ? `Cannot reach the API at ${API_URL}. On a phone that address is the phone — set EXPO_PUBLIC_API_URL to this machine's LAN address.`
+                : `Cannot reach the API at ${API_URL}. Check it is running, then try again.`
+              : 'Could not sign in. Please try again.',
       );
       setBusy(false);
     }

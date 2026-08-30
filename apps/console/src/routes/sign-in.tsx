@@ -29,9 +29,13 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
           ? // A distinct code, because the advice is the opposite: telling
             // somebody to try again when trying is the problem is unhelpful.
             'Too many attempts. Wait a few minutes, or reset your password in the app.'
-          : e instanceof ApiError && e.code === 'auth.unauthenticated'
-            ? 'Incorrect email or password.'
-            : 'Could not sign in. Please try again.',
+          : e instanceof ApiError && e.code === 'network.unreachable'
+            ? // Name the actual fault. "Incorrect email or password" here costs
+              // somebody an hour resetting a password that was never wrong.
+              'Cannot reach the server. Check that the API is running, then try again.'
+            : e instanceof ApiError && e.code === 'auth.unauthenticated'
+              ? 'Incorrect email or password.'
+              : 'Could not sign in. Please try again.',
       );
     } finally {
       setBusy(false);

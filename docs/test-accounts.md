@@ -3,7 +3,7 @@
 Seeded by `bash scripts/seed-demo.sh` (idempotent — safe to re-run; it logs in
 instead of failing if an account already exists).
 
-Four accounts, each holding exactly one capacity, at the one gym this deployment
+Five accounts, each holding exactly one capacity, at the one gym this deployment
 serves ([ADR-0023](adr/0023-single-gym-deployment.md)).
 
 There are **two** trainers on purpose. Under
@@ -86,7 +86,7 @@ Seeded with everything the member experience has:
 
 ## Classes
 
-The seed puts four on the timetable, so all three accounts have something to see:
+The seed puts four on the timetable, so every account has something to see:
 
 | Class | When | Instructor | Places |
 |-------|------|-----------|--------|
@@ -109,8 +109,8 @@ from the one row. What each account sees:
 
 ## Who does what (changed 2026-08-26)
 
-The three accounts now have genuinely different jobs, and the interesting thing
-to try is that **none of them can do another's**:
+The accounts now have genuinely different jobs, and the interesting thing to try
+is that **none of them can do another's**:
 
 | | `owner@` | `trainer@` | `member@` |
 |---|---|---|---|
@@ -166,16 +166,29 @@ Two things worth trying that used to be dead ends:
    depending on how the movement is measured. Submit it for review, then approve
    it yourself: this gym's single-owner setup allows self-approval (there is no
    second catalogue-manager to hand review to).
-6. **Invite someone.** As `owner@demo.test`, open *Invite people*, invite a new
-   email address as `trainer` or `member`, copy the code. Sign up as that email,
-   then paste the code on the join screen.
-7. **Try someone else's code.** Generate a code for one address, then try to redeem
-   it while signed in as a different account — refused, because an invitation is
-   bound to the email it was sent to.
-8. **Re-use a code.** Redeem the same code twice; the second attempt fails.
-   Invitations are single-use.
-9. **Audit yourself.** After any of the above, open Activity as `owner@` — every
-   mutation is there, grouped by day, written in the same transaction as the change.
+6. **Open the door, and walk through it.** There are no invitations any more
+   ([ADR-0031](adr/0031-standing-not-invitations.md) removed the table and the
+   routes). As `owner@demo.test` open *Settings* and turn **open registration**
+   on, then sign up a brand-new email and join. It grants `member` and nothing
+   else — standing is set afterwards, from the roster, by somebody who already
+   has it.
+7. **Try the closed door.** Turn open registration back off and try to join with
+   another new account: refused. The switch is the gym's, default closed, and
+   the server is what enforces it.
+8. **Set somebody's standing.** As `owner@`, open People → *Set standing* on the
+   account you just made and give it `trainer`. The **whole set** is sent, not a
+   delta, so promotion and demotion are the same call and cannot disagree. Try it
+   as `trainer@` and it is refused; try granting `owner` as anyone but an owner
+   and it is refused too. Revocation is a stamp, never a delete, so Activity can
+   still answer what that person could do ten minutes ago.
+9. **Make staff who have no account.** Still as `owner@`, People → *Add staff*
+   creates the account and its standing in one transaction and hands back a
+   generated one-time password ([ADR-0032](adr/0032-staff-accounts.md)) — shown
+   once, never stored in readable form. That is how `trainer2@demo.test` was
+   made; it then changed its own password to the shared one. An address that
+   already exists comes back **409**, not a merge.
+10. **Audit yourself.** After any of the above, open Activity as `owner@` — every
+    mutation is there, grouped by day, written in the same transaction as the change.
 
 ## Resetting
 

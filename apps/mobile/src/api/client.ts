@@ -73,11 +73,24 @@ async function send(
     if (token) headers.authorization = `Bearer ${token}`;
   }
 
-  return fetch(`${API_URL}${path}`, {
-    method,
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
+  try {
+    return await fetch(`${API_URL}${path}`, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    // `fetch` rejects only when nothing answered — the API is stopped, the
+    // phone is on a different network from the machine running it, or
+    // EXPO_PUBLIC_API_URL points somewhere unroutable. Raised as a *coded*
+    // ApiError rather than a bare TypeError so screens can branch on it the
+    // way they branch on every other failure, and say which fault it was.
+    throw new ApiError({
+      title: 'Cannot reach the server',
+      status: 0,
+      code: 'network.unreachable',
+    });
+  }
 }
 
 // ------------------------------------------------------- single-flight refresh

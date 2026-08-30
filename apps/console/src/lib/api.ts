@@ -160,20 +160,41 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 }
 
 export async function signIn(email: string, password: string): Promise<void> {
-  const response = await fetch(`${BASE}/api/v1/auth/login`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email, password, device_label: 'Console' }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${BASE}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password, device_label: 'Console' }),
+    });
+  } catch {
+    // `fetch` rejects only when the request never got an answer: the API is
+    // down, the dev proxy has nothing to proxy to, the machine is offline.
+    // Distinct from every HTTP status, because the credentials were never
+    // read by anything.
+    throw new ApiError(0, 'network.unreachable', 'Could not reach the server');
+  }
 
   const text = await response.text();
-  const payload: unknown = text ? JSON.parse(text) : null;
+  // A gateway that cannot reach the API answers with its own page, not our
+  // Problem Details — so a parse failure here is a transport failure, never a
+  // statement about this password.
+  let payload: unknown = null;
+  try {
+    payload = text ? JSON.parse(text) : null;
+  } catch {
+    payload = null;
+  }
 
   if (!response.ok) {
     const problem = payload as { code?: string; detail?: string } | null;
     throw new ApiError(
       response.status,
-      problem?.code ?? 'auth.unauthenticated',
+      // The fallback used to be `auth.unauthenticated`, which meant a 502 from
+      // a proxy with the API stopped behind it rendered as "Incorrect email or
+      // password" — the one message guaranteed to send somebody hunting for a
+      // typo in credentials that were correct. Only a 401 is about credentials.
+      problem?.code ?? (response.status === 401 ? 'auth.unauthenticated' : 'http.error'),
       problem?.detail ?? 'Could not sign in',
     );
   }

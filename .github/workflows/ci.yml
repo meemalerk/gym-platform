@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  backend:
+    name: Backend (fmt, clippy, test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --all --check
+
+      # The committed .sqlx cache lets query! macros compile with no database.
+      - name: Clippy
+        env:
+          SQLX_OFFLINE: "true"
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Test
+        env:
+          SQLX_OFFLINE: "true"
+        run: cargo test --workspace
+
+  e2e:
+    name: End-to-end (live Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: gym
+          POSTGRES_PASSWORD: gym_dev_password
+          POSTGRES_DB: gym
+        ports: ["5455:5432"]
+        options: >-
+          --health-cmd="pg_isready -U gym -d gym"
+          --health-interval=5s --health-timeout=5s --health-retries=10
+
+    env:
+      DATABASE_URL: postgres://gym:gym_dev_password@localhost:5455/gym
+      JWT_SECRET: ci-only-secret-not-used-in-any-real-environment
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      # Builds against the live service, which also re-validates every query!
+      # macro against the real schema rather than the cached metadata.
+      - name: Build server
+        run: cargo build --bin server
+
+      - name: Run migrations
+        run: |
+          cargo install sqlx-cli --no-default-features --features rustls,postgres --locked
+          sqlx migrate run --source ./migrations
+
+      - name: API + tenancy assertions (with RLS enforced)
+        run: bash scripts/e2e.sh
+
+      - name: Row-level security isolation
+        run: bash scripts/verify-rls.sh
+
+      - name: Invitations / multi-gym membership
+        run: bash scripts/verify-invitations.sh
+
+      - name: Audit trail (atomic + append-only)
+        run: bash scripts/verify-audit.sh
+
+      - name: Refresh-rotation race safety
+        run: |
+          SERVER_PORT=8080 SERVER_HOST=127.0.0.1 RUST_LOG=warn ./target/debug/server &
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:8080/health >/dev/null 2>&1 && break; sleep 0.5; done
+          node scripts/verify-refresh-hazard.mjs http://127.0.0.1:8080
+
+  mobile:
+    name: Mobile (typecheck, doctor, bundle)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # Validates SDK/native-module version alignment — npm "latest" is NOT
+      # correct for Expo native modules; the SDK's pins are authoritative.
+      - name: Expo doctor
+        run: npx expo-doctor@latest
+
+      # Proves the whole Metro/Babel pipeline resolves, including React Compiler.
+      - name: Bundle
+        run: npx expo export --platform ios --output-dir /tmp/expo-export-ci

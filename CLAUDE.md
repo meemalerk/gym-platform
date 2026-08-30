@@ -142,9 +142,8 @@ ADR that supersedes it — do not silently contradict it.
     per address and per origin in the database. → [ADR-0029](docs/adr/0029-auth-hardening.md)
 23. **Single-gym deployment.** This is one gym, not a platform of many — `gyms` is capped
     to one row by a DB trigger, active only when `SINGLE_GYM_MODE=true` (set explicitly in
-    `docker-compose.demo.yml`; off by default so `scripts/verify-rls.sh` and
-    `scripts/verify-rls.sh` can still create several gyms to prove tenant
-    isolation). The tenancy *engine* (`gym_id`, RLS, `TenantScope`) is unchanged; only the
+    `docker-compose.demo.yml`; off by default so `scripts/verify-rls.sh` can still
+    create several gyms to prove tenant isolation). The tenancy *engine* (`gym_id`, RLS, `TenantScope`) is unchanged; only the
     choice to have more than one gym is gone. → [ADR-0023](docs/adr/0023-single-gym-deployment.md),
     supersedes part of [ADR-0014](docs/adr/0014-identity-capacities-and-profiles.md)
 
