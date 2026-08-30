@@ -346,15 +346,47 @@ echo "    open registration on — anyone can join as a member"
 
 echo ""
 echo "=== assignments ==="
-# Look the published version up from the list rather than trusting $V — on a
+# Look the published version up from the list rather than trusting $V - on a
 # re-run the programme already exists and $V is empty.
-body "$B/api/v1/gyms/$IRON/programs" -H "authorization: Bearer $OWNER" >/dev/null
-PUB_V=$("$PY" -c "
-import json
+#
+# `latest_version` is not enough. Further down, this same script gives Beginner
+# Strength a v2 DRAFT on purpose (the lifecycle, visible), so from the second
+# run onwards its latest version is that draft: not assignable, and the whole
+# section printed "(no published version found)" and quietly skipped both the
+# assignments and the three weeks of history that depend on them. The data
+# survived only because it had already been seeded on run one.
+#
+# So: take the latest version if it is assignable, and otherwise ask that
+# programme for its versions and take the newest one that is.
+pub_version_of() { # pub_version_of <programme name>
+  local prog_id ver
+  body "$B/api/v1/gyms/$IRON/programs" -H "authorization: Bearer $OWNER" >/dev/null
+  ver=$("$PY" -c "
+import json,sys
 d = json.load(open('$VTMP/seed.json', encoding='utf-8'))
 print(next((p['latest_version']['id'] for p in d
-            if p['name'] == 'Beginner Strength' and p['latest_version']['is_assignable']), ''))
-" 2>/dev/null)
+            if p['name'] == sys.argv[1] and p['latest_version']['is_assignable']), ''))
+" "$1" 2>/dev/null)
+  if [ -n "$ver" ]; then echo "$ver"; return; fi
+
+  prog_id=$("$PY" -c "
+import json,sys
+d = json.load(open('$VTMP/seed.json', encoding='utf-8'))
+print(next((p['id'] for p in d if p['name'] == sys.argv[1]), ''))
+" "$1" 2>/dev/null)
+  [ -z "$prog_id" ] && { echo ""; return; }
+
+  body "$B/api/v1/gyms/$IRON/programs/$prog_id/versions" -H "authorization: Bearer $OWNER" >/dev/null
+  "$PY" -c "
+import json
+d = json.load(open('$VTMP/seed.json', encoding='utf-8'))
+ok = [v for v in d if v.get('is_assignable')]
+ok.sort(key=lambda v: v.get('version_number', 0), reverse=True)
+print(ok[0]['id'] if ok else '')
+" 2>/dev/null
+}
+
+PUB_V=$(pub_version_of 'Beginner Strength')
 
 if [ -n "$PUB_V" ]; then
   # Backdated three weeks so the session history below is coherent with it.
@@ -373,13 +405,7 @@ if [ -n "$PUB_V" ]; then
 
   # member@ also runs the hypertrophy block — two concurrent programmes is the
   # normal case for a serious member, and the Today screen should show both.
-  body "$B/api/v1/gyms/$IRON/programs" -H "authorization: Bearer $OWNER" >/dev/null
-  HYP_V=$("$PY" -c "
-import json
-d = json.load(open('$VTMP/seed.json', encoding='utf-8'))
-print(next((p['latest_version']['id'] for p in d
-            if p['name'] == 'Hypertrophy Block' and p['latest_version']['is_assignable']), ''))
-" 2>/dev/null)
+  HYP_V=$(pub_version_of 'Hypertrophy Block')
   [ -n "$HYP_V" ] && assign "$MEMBER_ID" "$HYP_V" "$(date -d '-7 days' +%F)" "member@ also starts Hypertrophy Block"
 else
   echo "    (no published version found)"

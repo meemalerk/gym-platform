@@ -64,6 +64,23 @@ services:
       # :8090 added for the local Expo web dev server (apps/mobile) talking to
       # this already-running demo API instead of a separately-built dev stack.
       CORS_ALLOWED_ORIGINS: http://localhost:8210,http://127.0.0.1:8210,http://localhost:8090
+      # The self-hosted card gateway (ADR-0028). Without this the demo logs
+      # "no payment gateway configured — card payment is unavailable" and the
+      # Pay button on an invoice does nothing: PAYMENT_GATEWAY is only defaulted
+      # to dummy in DEBUG builds, and this image is `cargo build --release`. So
+      # the one deployment built to demonstrate the whole payment path was the
+      # one deployment that could not.
+      PAYMENT_GATEWAY: dummy
+      # Where a BROWSER can reach the API, for the checkout redirect. Unset, it
+      # falls back to the bound address — 0.0.0.0, printed as 127.0.0.1 — which
+      # happens to work here only because the API port is published. Stating it
+      # is the difference between "works" and "works by accident".
+      #
+      # NOTE: absolute by nature, so a viewer down a `demo/share.sh` tunnel
+      # cannot reach the card page — their browser would dial their own machine.
+      # Everything else in the demo is same-origin precisely to avoid that; the
+      # card page is the one screen a tunnel guest cannot use.
+      PUBLIC_BASE_URL: http://localhost:8211
       RUST_LOG: info,tower_http=warn
     ports:
       - "8211:8211"

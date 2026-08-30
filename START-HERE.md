@@ -176,7 +176,9 @@ database behind the app's back.
 One thing is deliberately *not* built, and will not be: nutrition and meal
 plans. The rest is here, including the class timetable, booking a place in a
 class, and paying an invoice by card — though the card page is a stand-in for a
-bank, so **no real money moves**. Nobody is chased for an unpaid bill either: an
+bank, so **no real money moves**. (One exception if you were sent a link rather
+than running it yourself: the card page is the single screen a shared link
+cannot reach.) Nobody is chased for an unpaid bill either: an
 overdue member can still train, on purpose, until that decision is made
 properly.
 
