@@ -91,6 +91,9 @@ impl GymClass {
     ///
     /// Both layers on purpose: the CHECK constraints are the guarantee, and
     /// these are the readable error a person gets instead of a 500.
+    // A slot IS eight facts; bundling them into a struct would only move the
+    // same list somewhere less readable. Same call as billing.rs makes.
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         gym_id: GymId,
         name: &str,

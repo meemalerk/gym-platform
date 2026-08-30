@@ -266,9 +266,16 @@ curl -fsS "$B/api-docs/openapi.json" > $VTMP/oapi.json
 #   -2  the two invitation paths, removed with the feature (ADR-0031)
 #   +1  PUT a member's capacities — what replaced them
 #   +2  POST a staff account, and change-password (ADR-0032)
+# 73 -> 79 across the ADR-0033..0034 work:
+#   +5  group classes and bookings (ADR-0033: list/create a class, delete one,
+#       book a place, read the roster, cancel a booking)
+#   +1  a manager PROPOSES a pairing and the named trainer accepts (ADR-0034);
+#       direct creation of a coach relationship was removed in the same change.
+# Unplanned sessions (ADR-0035) deliberately added NO path: they made two
+# fields optional on the existing workout-sessions routes.
 # The two `/pay/...` card-page routes are NOT counted: they serve HTML to a
 # browser and are deliberately outside the OpenAPI document (ADR-0028).
-check "openapi paths" "$("$PY" -c "import json;print(len(json.load(open('$VTMP/oapi.json', encoding='utf-8'))['paths']))")" "73"
+check "openapi paths" "$("$PY" -c "import json;print(len(json.load(open('$VTMP/oapi.json', encoding='utf-8'))['paths']))")" "79"
 # Billing must be published as its own tag, not folded into gyms.
 # 8: the invoice checkout-session path, plus cancelling a subscription.
 check "billing routes in openapi" "$("$PY" -c "import json;p=json.load(open('$VTMP/oapi.json', encoding='utf-8'))['paths'];print(sum(1 for k in p if any(w in k for w in ('plans','subscriptions','invoices'))))")" "8"

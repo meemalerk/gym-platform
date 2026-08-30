@@ -161,7 +161,9 @@ pub enum LifecycleError {
         status: &'static str,
     },
 
-    #[error("a version needs at least one prescribed exercise before it can be reviewed — a week or a workout with nothing in it is not trainable")]
+    #[error(
+        "a version needs at least one prescribed exercise before it can be reviewed — a week or a workout with nothing in it is not trainable"
+    )]
     NoContent,
 
     #[error("a version must be approved by someone other than its author")]

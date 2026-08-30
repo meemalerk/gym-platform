@@ -183,6 +183,9 @@ impl CoachingRequest {
     /// So this stays **Pending**. The named coach accepts, and accepting is what
     /// creates the relationship. A manager cannot answer their own proposal
     /// (`may_answer`), because a handshake you can complete alone is not one.
+    // Two actors and both their capability sets: a proposal cannot be
+    // validated without all four, so the width is the rule, not clutter.
+    #[allow(clippy::too_many_arguments)]
     pub fn propose(
         gym_id: GymId,
         athlete_id: UserId,

@@ -231,10 +231,7 @@ pub fn build_router(
         .routes(routes!(routes::checkins::my_pass))
         .routes(routes!(routes::checkins::scan))
         .routes(routes!(routes::checkins::recent))
-        .routes(routes!(
-            routes::classes::timetable,
-            routes::classes::create
-        ))
+        .routes(routes!(routes::classes::timetable, routes::classes::create))
         .routes(routes!(routes::classes::archive))
         .routes(routes!(routes::classes::book))
         .routes(routes!(routes::classes::cancel_booking))

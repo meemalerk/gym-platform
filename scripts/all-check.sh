@@ -17,6 +17,14 @@ fi
 # its own on a dedicated port (8097/8098/8099), so killing here only breaks the
 # long-running dev server the phone is connected to — which is exactly what
 # happened once.
+#
+# On WINDOWS that promise is only half true, and it is worth knowing before you
+# blame the network: each verify script calls `taskkill //F //IM server.exe`
+# first, which matches by IMAGE NAME and so takes down every server.exe on the
+# machine - including your `cargo run` dev server. That reap is deliberate (a
+# running binary holds target/debug/server.exe open, and the next cargo build
+# then silently keeps a STALE binary), but it does mean: on Windows, running
+# this gate WILL stop a dev server your phone or the console is talking to.
 
 cargo fmt --all
 echo "=== clippy ==="
@@ -32,6 +40,8 @@ echo "=== e2e (RLS enforced) ==="
 bash scripts/e2e.sh 2>&1 | grep -E "  FAIL |PASSED:" | tail -6
 echo "=== standing: how staff are made (ADR-0031) ==="
 bash scripts/verify-capacities.sh 2>&1 | tail -3
+echo "=== audit trail (atomic + append-only) ==="
+bash scripts/verify-audit.sh 2>&1 | tail -3
 echo "=== rls isolation ==="
 bash scripts/verify-rls.sh 2>&1 | tail -3
 echo "=== programme immutability ==="

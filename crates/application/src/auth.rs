@@ -515,7 +515,9 @@ impl AuthService {
         }
 
         let password_hash = self.hasher.hash(new_password)?;
-        self.users.set_password_hash(user_id, &password_hash).await?;
+        self.users
+            .set_password_hash(user_id, &password_hash)
+            .await?;
 
         // Every session, everywhere, exactly as a reset does — including this
         // one. Changing a password is what somebody does when they think it is

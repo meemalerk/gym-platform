@@ -170,7 +170,10 @@ pub async fn set_capacities(
     let capacities = parse_capacities(&body.capacities)?;
 
     let target = gym_domain::UserId::from(user_id);
-    let held = state.gyms.set_capacities(&tenant, target, capacities).await?;
+    let held = state
+        .gyms
+        .set_capacities(&tenant, target, capacities)
+        .await?;
 
     let display_name = state
         .gyms
@@ -260,7 +263,11 @@ pub async fn create_staff(
             user_id: created.user.id.into_uuid(),
             display_name: created.user.display_name,
             email: created.user.email.as_str().to_owned(),
-            capacities: created.capacities.iter().map(|c| c.as_str().to_owned()).collect(),
+            capacities: created
+                .capacities
+                .iter()
+                .map(|c| c.as_str().to_owned())
+                .collect(),
             temporary_password: created.temporary_password,
         }),
     ))

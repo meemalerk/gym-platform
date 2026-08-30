@@ -8,10 +8,10 @@ use anyhow::{Context, Result};
 use gym_api::{AppState, build_router};
 use gym_application::{
     assignments::AssignmentService, auth::AuthService, billing::BillingService,
-    calendar::CalendarService, checkins::CheckInService, classes::ClassService, coaching::CoachingService,
-    coaching_requests::CoachingRequestService, entitlements::EntitlementService,
-    execution::ExecutionService, exercises::ExerciseService, goals::GoalService, gyms::GymService,
-    ports::SystemClock, profiles::ProfileService,
+    calendar::CalendarService, checkins::CheckInService, classes::ClassService,
+    coaching::CoachingService, coaching_requests::CoachingRequestService,
+    entitlements::EntitlementService, execution::ExecutionService, exercises::ExerciseService,
+    goals::GoalService, gyms::GymService, ports::SystemClock, profiles::ProfileService,
     programs::ProgramService, recommendations::RecommendationService,
 };
 use gym_infrastructure::{
@@ -154,8 +154,7 @@ async fn main() -> Result<()> {
         billing: billing_repo.clone(),
     };
 
-    let hasher: Arc<dyn gym_application::ports::PasswordHasher> =
-        Arc::new(Argon2PasswordHasher);
+    let hasher: Arc<dyn gym_application::ports::PasswordHasher> = Arc::new(Argon2PasswordHasher);
 
     let state = AppState {
         billing: BillingService {

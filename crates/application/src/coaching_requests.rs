@@ -184,7 +184,9 @@ impl CoachingRequestService {
             now,
         )?;
 
-        self.requests.insert_chosen(tenant, &request, &pairing).await?;
+        self.requests
+            .insert_chosen(tenant, &request, &pairing)
+            .await?;
         Ok(request)
     }
 

@@ -80,8 +80,12 @@ jobs:
       - name: Row-level security isolation
         run: bash scripts/verify-rls.sh
 
-      - name: Invitations / multi-gym membership
-        run: bash scripts/verify-invitations.sh
+      # ADR-0031 deleted invitations, and this step kept naming
+      # scripts/verify-invitations.sh long after the file went with them — so
+      # every CI run would have died here on a missing script. verify-capacities
+      # is what replaced it: the open door, then standing set from the roster.
+      - name: Standing / how staff are made (ADR-0031)
+        run: bash scripts/verify-capacities.sh
 
       - name: Audit trail (atomic + append-only)
         run: bash scripts/verify-audit.sh

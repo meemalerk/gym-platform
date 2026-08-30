@@ -78,7 +78,8 @@ impl AssignmentService {
         cmd: AssignProgramCommand,
     ) -> ApplicationResult<ProgramAssignment> {
         // 1. Authorization: manager, or the athlete's active coach.
-        self.ensure_may_prescribe_for(tenant, cmd.athlete_id).await?;
+        self.ensure_may_prescribe_for(tenant, cmd.athlete_id)
+            .await?;
 
         // The athlete must be a current member. "Not found" rather than
         // "unsuitable", so other gyms' membership cannot be probed.
@@ -137,7 +138,8 @@ impl AssignmentService {
                     entity: "assignment",
                 })?;
 
-        self.ensure_may_prescribe_for(tenant, assignment.athlete_id).await?;
+        self.ensure_may_prescribe_for(tenant, assignment.athlete_id)
+            .await?;
 
         assignment.withdraw(tenant.actor_id, self.clock.now())?;
         self.assignments

@@ -200,13 +200,11 @@ impl ExecutionService {
             )));
         }
 
-        let assignment = self
-            .assignments
-            .find(tenant, assignment_id)
-            .await?
-            .ok_or(ApplicationError::NotFound {
+        let assignment = self.assignments.find(tenant, assignment_id).await?.ok_or(
+            ApplicationError::NotFound {
                 entity: "assignment",
-            })?;
+            },
+        )?;
 
         // The workout must belong to the assignment's pinned version — else the
         // session claims to execute a plan the athlete was never given. The

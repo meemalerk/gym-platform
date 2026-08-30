@@ -228,8 +228,7 @@ impl BillingService {
                 .await?
                 .iter()
                 .any(|v| {
-                    v.subscription.member_id == tenant.actor_id
-                        && v.subscription.status.is_active()
+                    v.subscription.member_id == tenant.actor_id && v.subscription.status.is_active()
                 })
         {
             return Err(ApplicationError::Conflict(

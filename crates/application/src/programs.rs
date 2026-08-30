@@ -12,8 +12,8 @@
 use std::sync::Arc;
 
 use gym_domain::{
-    ApprovalPolicy, ExerciseId, ProgramId, ProgramVersionId, ProgramWeekId, TenantContext,
-    UserId, WorkoutTemplateId,
+    ApprovalPolicy, ExerciseId, ProgramId, ProgramVersionId, ProgramWeekId, TenantContext, UserId,
+    WorkoutTemplateId,
     prescription::ExercisePrescription,
     program::{LifecycleError, Program, ProgramVersion},
     workout::{ProgramWeek, TemplateExercise, WorkoutTemplate},
@@ -22,8 +22,7 @@ use gym_domain::{
 use crate::{
     ApplicationError, ApplicationResult,
     ports::{
-        Clock, ExerciseRepository, GymRepository, ProgramRepository, UserRepository,
-        VersionContent,
+        Clock, ExerciseRepository, GymRepository, ProgramRepository, UserRepository, VersionContent,
     },
 };
 

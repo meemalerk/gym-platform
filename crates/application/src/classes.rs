@@ -227,7 +227,9 @@ impl ClassService {
         let (local_date, local_time) = self.local_now(tenant).await?;
         booking.cancel(&class, local_date, local_time, self.clock.now())?;
 
-        self.classes.save_cancelled_booking(tenant, &booking).await?;
+        self.classes
+            .save_cancelled_booking(tenant, &booking)
+            .await?;
         Ok(booking)
     }
 

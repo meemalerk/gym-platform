@@ -128,7 +128,11 @@ impl ClassRepository for PgClassRepository {
         }))
     }
 
-    async fn insert_class(&self, tenant: &TenantContext, class: &GymClass) -> ApplicationResult<()> {
+    async fn insert_class(
+        &self,
+        tenant: &TenantContext,
+        class: &GymClass,
+    ) -> ApplicationResult<()> {
         let mut tx = begin_tenant_tx(&self.pool, tenant).await.map_err(db_err)?;
 
         sqlx::query!(

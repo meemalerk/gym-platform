@@ -851,8 +851,10 @@ mod tests {
     #[test]
     fn a_blank_name_is_no_name_rather_than_an_error() {
         // The member came to train, not to fill in a form.
-        for blank in ["", "   ", "	
-"] {
+        for blank in [
+            "", "   ", "	
+",
+        ] {
             let session = unplanned(UserId::new(), Some(blank)).unwrap();
             assert_eq!(session.title, None, "{blank:?} should normalise away");
         }
@@ -972,7 +974,8 @@ mod tests {
         .unwrap();
 
         assert_eq!(session.duration(), None, "open sessions have elapsed time");
-        session.complete(now(), Some(started + chrono::Duration::minutes(45)))
+        session
+            .complete(now(), Some(started + chrono::Duration::minutes(45)))
             .unwrap();
 
         assert_eq!(session.duration().unwrap().num_minutes(), 45);

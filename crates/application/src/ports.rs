@@ -1251,11 +1251,8 @@ pub trait ClassRepository: Send + Sync {
         id: GymClassId,
     ) -> ApplicationResult<Option<GymClass>>;
 
-    async fn insert_class(
-        &self,
-        tenant: &TenantContext,
-        class: &GymClass,
-    ) -> ApplicationResult<()>;
+    async fn insert_class(&self, tenant: &TenantContext, class: &GymClass)
+    -> ApplicationResult<()>;
 
     /// Persist an archive. Compare-and-swap on still-live, so two managers
     /// archiving at once cannot both believe they were first.

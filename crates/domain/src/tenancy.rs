@@ -374,6 +374,7 @@ mod tests {
         // One rung, since ADR-0036 removed admin and head_coach. The loop stays
         // rather than collapsing to a single assert: it is the shape that says
         // "everyone who runs the gym", and a future rung joins the list here.
+        #[allow(clippy::single_element_loop)]
         for capacity in [Capacity::Owner] {
             let c = caps(&[capacity]);
             assert!(c.can_author_programs(), "{capacity:?} writes programmes");
@@ -498,7 +499,10 @@ mod tests {
 
     #[test]
     fn an_owner_can_step_down_while_another_owner_remains() {
-        assert_eq!(check_standing_change(&owner(), &owner(), &member(), 1), Ok(()));
+        assert_eq!(
+            check_standing_change(&owner(), &owner(), &member(), 1),
+            Ok(())
+        );
     }
 
     #[test]
@@ -524,7 +528,10 @@ mod tests {
 
     #[test]
     fn an_owner_may_create_a_trainer_outright() {
-        assert_eq!(check_standing_grant(&owner(), &trainer_and_member()), Ok(()));
+        assert_eq!(
+            check_standing_grant(&owner(), &trainer_and_member()),
+            Ok(())
+        );
     }
 
     #[test]

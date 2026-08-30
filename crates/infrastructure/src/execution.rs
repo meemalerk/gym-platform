@@ -147,9 +147,7 @@ impl ExecutionRepository for PgExecutionRepository {
                         gym_id: GymId::from(r.gym_id),
                         athlete_id: UserId::from(r.athlete_id),
                         assignment_id: r.assignment_id.map(AssignmentId::from),
-                        workout_template_id: r
-                            .workout_template_id
-                            .map(WorkoutTemplateId::from),
+                        workout_template_id: r.workout_template_id.map(WorkoutTemplateId::from),
                         title: r.title,
                         started_at: r.started_at,
                         status: status_from_row(&r.status, r.completed_at, r.abandoned_at)?,
@@ -330,7 +328,9 @@ impl ExecutionRepository for PgExecutionRepository {
             session.id.into_uuid(),
             tenant.gym_id.into_uuid(),
             session.athlete_id.into_uuid(),
-            session.assignment_id.map(gym_domain::AssignmentId::into_uuid),
+            session
+                .assignment_id
+                .map(gym_domain::AssignmentId::into_uuid),
             session
                 .workout_template_id
                 .map(gym_domain::WorkoutTemplateId::into_uuid),
