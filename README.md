@@ -132,6 +132,12 @@ Press `w` for a browser, `i` or `a` for a simulator, or scan the QR code with **
 (App Store / Play Store) to run it on a real phone. No Apple Developer account or custom
 build is needed.
 
+> `npm start` runs `expo start --go`, and the `--go` matters. This project also has
+> `expo-dev-client` installed for standalone builds, and the Expo CLI treats that as "this
+> project uses a custom development build": plain `expo start` then advertises a
+> `gymplatform://` link that only such a build can open, so **Expo Go shows nothing**. If
+> you are working on a standalone build instead, use `npm run start:dev-client`.
+
 **On a real phone**, the phone and this computer must be on the same Wi-Fi, and the phone
 cannot reach `localhost` — that would be the phone itself. Point the app at this computer's
 address on the network:
