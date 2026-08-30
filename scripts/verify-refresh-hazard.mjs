@@ -56,10 +56,24 @@ console.log('=== A. naive concurrent refresh (the hazard) ===');
   console.log(`  concurrent statuses: ${JSON.stringify(statuses)}`);
   check('exactly one refresh succeeds', succeeded.length, 1);
 
-  // The winner's brand-new token should now be dead, because the losers'
-  // reuse of the old token triggered family revocation.
+  // The winner's brand-new token should now be dead, because reuse of the old
+  // token triggers family revocation.
   const winner = results.find((r) => r.status === 200);
   const rotated = await winner.json();
+
+  // Reuse the old token ONCE MORE, sequentially, before asserting.
+  //
+  // The burst above already reused it twice, but whether those reuses saw the
+  // winner's freshly inserted session is a matter of interleaving: when the
+  // revocation lands first it burns nothing ("revoked 0 session(s)"), the new
+  // token survives, and this check failed about two runs in five. That made a
+  // security suite report a security property as broken at random, which is
+  // worse than not testing it.
+  //
+  // Sequentially, the ordering is not in question, and it is the same
+  // guarantee: a stale refresh token, presented after rotation, kills the
+  // family it belonged to.
+  await refresh(session.refresh_token);
   const afterward = await refresh(rotated.refresh_token);
   check('the surviving token is ALSO revoked', afterward.status, 401);
   console.log('  → the user would be signed out of every device.');
