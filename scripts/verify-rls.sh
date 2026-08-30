@@ -5,33 +5,9 @@
 # Usage: bash scripts/verify-rls.sh
 set -uo pipefail
 
-# How to reach Postgres. Locally it is the docker-compose container, addressed
-# by the name docker-compose gives it. On CI it is a SERVICE container with a
-# generated name and no `gym-postgres` to exec into, so every statement here
-# came back "Error response from daemon: No such container" and the suite
-# reported 0 passed, 7 failed - the one suite whose whole job is to prove the
-# database enforces tenant isolation, silently proving nothing.
-#
-# So: prefer a real psql client when the machine has one (CI runners ship one),
-# and fall back to docker exec, which is the normal case on a development
-# machine that has Docker but no Postgres client installed.
-#
-# Both roles connect over TCP either way. That matters for the app role: it must
-# authenticate by password through pg_hba rather than arriving over the local
-# socket, because the point of this suite is that the app connects as a
-# NON-OWNER (owners bypass RLS entirely).
-OWNER_URL="${DATABASE_URL:-postgres://gym:gym_dev_password@localhost:5455/gym}"
-APP_URL="${APP_DATABASE_URL:-postgres://gym_app:gym_app_dev_password@localhost:5455/gym}"
-
-if command -v psql >/dev/null 2>&1; then
-  PSQL_OWNER=(psql "$OWNER_URL" -tAq)
-  PSQL_APP=(psql "$APP_URL" -tAq)
-else
-  # -i is required: these are fed SQL on stdin via heredocs.
-  PSQL_OWNER=(docker exec -i gym-postgres psql -U gym -d gym -tAq)
-  PSQL_APP=(docker exec -i -e PGPASSWORD=gym_app_dev_password gym-postgres
-            psql -U gym_app -h 127.0.0.1 -d gym -tAq)
-fi
+# Sourced, not repeated: verify-audit.sh needs exactly the same thing, and two
+# copies of "how do I reach the database" is how one of them gets fixed alone.
+. "$(dirname "$0")/lib/psql.sh"
 
 pass=0; fail=0
 check() { # check <label> <actual> <expected>

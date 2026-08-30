@@ -70,9 +70,9 @@ check() { if [ "$2" = "$3" ]; then echo "  PASS  $1 ($2)"; PASS=$((PASS+1));
 jget() { "$PY" -c "import json,sys;sys.stdout.reconfigure(encoding='utf-8');d=json.loads(sys.stdin.buffer.read().decode('utf-8'));print(eval('d'+sys.argv[1]))" "$1" 2>/dev/null; }
 pyq() { "$PY" -c "import json,sys;sys.stdout.reconfigure(encoding='utf-8');d=json.load(open('$VTMP/b.json', encoding='utf-8'));print(eval(sys.argv[1]))" "$1" 2>/dev/null; }
 code() { curl -s -o $VTMP/b.json -w "%{http_code}" "$@"; }
-PSQL=(docker exec -i gym-postgres psql -U gym -d gym -tAq)
-PSQL_APP=(docker exec -i -e PGPASSWORD=gym_app_dev_password gym-postgres
-          psql -U gym_app -h 127.0.0.1 -d gym -tAq)
+# Container name locally, a real client on CI - see the reasoning there.
+. scripts/lib/psql.sh
+PSQL=("${PSQL_OWNER[@]}")
 
 S=$(date +%s%N); PW="correct horse battery staple"
 OWNER="aud-owner-$S@example.com"; COACH="aud-coach-$S@example.com"
