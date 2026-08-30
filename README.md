@@ -117,19 +117,25 @@ cargo sqlx prepare --workspace
 SQLX_OFFLINE=true cargo check --workspace
 ```
 
-## Mobile app (Expo SDK 57)
+## Mobile app (Expo SDK 54)
+
+The member and floor-trainer client. Needs the API running (see **Quick start** above).
 
 ```bash
 cd apps/mobile
-npm install
-npm run typecheck          # tsc --noEmit
-npm start                  # Expo dev server
+npm install --legacy-peer-deps   # a transitive peer pulls in react-native-windows; see CLAUDE.md
+npm run typecheck                # tsc --noEmit
+npm start                        # Expo dev server — press w for web, i/a for a simulator
 ```
 
-A **custom dev client is required** (`expo-dev-client` is installed) — Expo Go cannot load
-`expo-secure-store`. Build one with EAS or `npx expo run:ios` / `run:android`.
+**On a physical phone**, scan the QR from `npm start` with **Expo Go** (App Store /
+Play Store) — the app is on SDK 54, which matches Expo Go's current build, so no custom
+dev client, Apple Developer account or EAS build is needed. The phone and this machine
+must be on the same Wi-Fi. `expo-dev-client` is still installed for standalone builds
+(`npx expo run:ios` / `run:android`) if you need one.
 
-Point the app at the API. A physical device cannot reach the host's `localhost`:
+A physical device cannot reach the host's `localhost`, so point it at this machine's LAN
+address:
 
 ```bash
 EXPO_PUBLIC_API_URL=http://192.168.1.5:8080 npm start
@@ -144,6 +150,37 @@ npm run codegen:api        # writes src/api/schema.d.ts from /api-docs/openapi.j
 `src/api/gym.ts` **derives its types from that generated schema**, so a backend contract
 change becomes a TypeScript error rather than a runtime failure on a phone.
 
+## Console (web app for owners & coaches)
+
+The React + Vite back-office client ([ADR-0009](docs/adr/0009-client-stack.md)) — billing
+ledgers, rosters, catalogue review: the work a phone is worst at. Needs the API running.
+
+```bash
+# 1. Start the API on :8080 (the port the console's dev server proxies to)
+cargo run --bin server
+
+# 2. Start the console
+cd apps/console
+npm install
+npm run dev                # http://localhost:5174 — proxies /api to :8080
+```
+
+Same-origin in development (Vite proxies `/api`) and in the demo (nginx does), so there is
+**no absolute API URL and no CORS entry** to keep in step. Sign in with a seeded account
+(`bash scripts/seed-demo.sh`, then [docs/test-accounts.md](docs/test-accounts.md)).
+
+Keeping it honest:
+
+```bash
+npm run typecheck          # part of scripts/all-check.sh
+npm run tokens             # regenerate src/tokens.css after a palette change
+npm run codegen:api        # regenerate src/lib/schema.d.ts against a running API
+```
+
+`src/tokens.css` is **generated** from `apps/mobile/src/ui/theme.ts`; `all-check.sh`
+regenerates it and fails if the checked-in file drifts, so the two clients cannot disagree
+about colour or shape.
+
 ## Layout
 
 ```
@@ -154,7 +191,8 @@ crates/
   api/             Axum router, extractors, Problem Details errors, OpenAPI
 bins/server/       entrypoint: config, wiring, graceful shutdown
 migrations/        sqlx migrations (never edit an applied one — add a new one)
-apps/mobile/       Expo SDK 57 app (expo-router, TanStack Query, Zustand)
+apps/mobile/       Expo SDK 54 app (expo-router, TanStack Query, Zustand)
+apps/console/      React + Vite web app for owners & coaches (TanStack, shared tokens)
 scripts/           verification suites (all-check.sh runs the lot) + seed-demo.sh
 docs/              the plan; docs/adr/ holds the decisions
 screenshots/       captures of every view, per role (see its README)
@@ -189,10 +227,10 @@ React + Vite project.
 
 ```bash
 # API must allow the web origin explicitly (CORS is closed by default)
-CORS_ALLOWED_ORIGINS=http://localhost:8212 cargo run --bin server
+CORS_ALLOWED_ORIGINS=http://localhost:8210 cargo run --bin server   # :8080
 
 cd apps/mobile
-EXPO_PUBLIC_API_URL=http://localhost:8211 npx expo start --web --port 8210
+EXPO_PUBLIC_API_URL=http://localhost:8080 npx expo start --web --port 8210
 ```
 
 **WSL note:** Metro binds IPv6 (`::`), and WSL2's `localhostForwarding` only creates a relay
