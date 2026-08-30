@@ -64,15 +64,24 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
 
-      # Builds against the live service, which also re-validates every query!
-      # macro against the real schema rather than the cached metadata.
-      - name: Build server
-        run: cargo build --bin server
-
+      # MIGRATIONS FIRST. This job used to build before migrating, and it has
+      # never once passed: sqlx::query! is verified against the live schema at
+      # COMPILE time, so building against the freshly-created, empty service
+      # database fails with a wall of `relation "..." does not exist` and cargo
+      # exits 101. It reads like a database problem and is an ordering problem.
+      # (The same trap the README's Quick start now warns about: apply the
+      # migrations, or build with SQLX_OFFLINE=true against the cached
+      # metadata. This job deliberately wants the former.)
       - name: Run migrations
         run: |
           cargo install sqlx-cli --no-default-features --features rustls,postgres --locked
           sqlx migrate run --source ./migrations
+
+      # Now the schema exists, so this re-validates every query! macro against
+      # the REAL database rather than the committed .sqlx cache - which is the
+      # whole reason this job does not set SQLX_OFFLINE.
+      - name: Build server
+        run: cargo build --bin server
 
       - name: API + tenancy assertions (with RLS enforced)
         run: bash scripts/e2e.sh
