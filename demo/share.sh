@@ -43,14 +43,30 @@ if command -v cloudflared >/dev/null 2>&1; then
   CF=cloudflared
 elif [ -x "$BIN_DIR/cloudflared" ]; then
   CF="$BIN_DIR/cloudflared"
+# share.ps1 (what share-demo.bat runs) puts a .exe in this same folder.
+# Git Bash runs it perfectly well, so there is no reason to fetch a second
+# copy just because the name differs. Not -x: a downloaded .exe on Windows
+# does not necessarily carry the executable bit.
+elif [ -f "$BIN_DIR/cloudflared.exe" ]; then
+  CF="$BIN_DIR/cloudflared.exe"
 else
   echo "Fetching cloudflared (one-off, ~20 MB)…"
   mkdir -p "$BIN_DIR"
+  # Default output name; the Windows arms override it with an .exe.
+  OUT="$BIN_DIR/cloudflared"
   case "$(uname -s)-$(uname -m)" in
     Linux-x86_64)   ASSET=cloudflared-linux-amd64 ;;
     Linux-aarch64)  ASSET=cloudflared-linux-arm64 ;;
     Darwin-arm64)   ASSET=cloudflared-darwin-arm64.tgz ;;
     Darwin-x86_64)  ASSET=cloudflared-darwin-amd64.tgz ;;
+    # Git Bash reports MINGW64_NT-10.0-22631, which fell through to the
+    # catch-all below: `bash demo/share.sh` - the command the README gives -
+    # died on Windows with "No cloudflared build", while share-demo.bat
+    # worked. Same script, same machine, different answer.
+    MINGW*-x86_64|MSYS*-x86_64|CYGWIN*-x86_64)
+      ASSET=cloudflared-windows-amd64.exe; OUT="$BIN_DIR/cloudflared.exe" ;;
+    MINGW*-i686|MSYS*-i686|CYGWIN*-i686)
+      ASSET=cloudflared-windows-386.exe;   OUT="$BIN_DIR/cloudflared.exe" ;;
     *) fail "No cloudflared build for $(uname -s)-$(uname -m)."
        echo "Install it yourself: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/"
        exit 1 ;;
@@ -60,10 +76,10 @@ else
   if [[ "$ASSET" == *.tgz ]]; then
     curl -fsSL "$URL" | tar -xz -C "$BIN_DIR" cloudflared || { fail "Download failed."; exit 1; }
   else
-    curl -fsSL "$URL" -o "$BIN_DIR/cloudflared" || { fail "Download failed."; exit 1; }
+    curl -fsSL "$URL" -o "$OUT" || { fail "Download failed."; exit 1; }
   fi
-  chmod +x "$BIN_DIR/cloudflared"
-  CF="$BIN_DIR/cloudflared"
+  chmod +x "$OUT" 2>/dev/null || true
+  CF="$OUT"
 fi
 
 # ------------------------------------------------------------ 3. open it up

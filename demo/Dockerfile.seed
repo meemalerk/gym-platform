@@ -16,4 +16,15 @@ RUN apt-get update \
 WORKDIR /app
 COPY scripts/seed-demo.sh /app/seed-demo.sh
 
+# Belt and braces alongside .gitattributes: a tree cloned before that file
+# existed, or with core.autocrlf=true, carries CRLF line endings, and bash
+# here reads the trailing CR as part of each token:
+#
+#   set: pipefail: invalid option name
+#   syntax error near unexpected token `$'do\r''
+#
+# The seed then exits 2, and `web` waits on this container completing, so
+# the whole demo never comes up. Cheap to strip, expensive to diagnose.
+RUN sed -i 's/\r$//' /app/seed-demo.sh
+
 ENTRYPOINT ["bash", "/app/seed-demo.sh"]

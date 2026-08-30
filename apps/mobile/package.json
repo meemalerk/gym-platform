@@ -54,7 +54,7 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "doctor": "npx expo-doctor@latest",
-    "codegen:api": "npx --yes openapi-typescript@7 http://localhost:${API_PORT:-8092}/api-docs/openapi.json -o src/api/schema.d.ts"
+    "codegen:api": "node ../../scripts/codegen-api.mjs src/api/schema.d.ts 8092"
   },
   "private": true
 }

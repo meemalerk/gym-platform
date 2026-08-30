@@ -1,0 +1,34 @@
+# Line endings are load-bearing here, not cosmetic.
+#
+# Windows checks out with core.autocrlf=true by default, which rewrote
+# scripts/seed-demo.sh with CRLF. demo/Dockerfile.seed COPYs that file into a
+# Linux image, where bash reads the trailing \r as part of each token:
+#
+#   /app/seed-demo.sh: line 10: set: pipefail: invalid option name
+#   /app/seed-demo.sh: line 24: syntax error near unexpected token `$'do\r''
+#
+# The seed then exits 2, and `web` depends on it completing, so the demo the
+# README leads with never came up at all — on Windows only, which is why a
+# Linux CI run stayed green.
+* text=auto
+
+# Anything a Linux shell, Docker or nginx has to read must be LF, on every
+# platform, regardless of the cloner's git config.
+*.sh        text eol=lf
+*.command   text eol=lf
+*.mjs       text eol=lf
+*.py        text eol=lf
+Dockerfile* text eol=lf
+*.conf      text eol=lf
+
+# And the Windows launchers must stay CRLF: a .bat with LF endings misbehaves
+# on some Windows versions in ways that look like the file being corrupt.
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Never touched.
+*.png binary
+*.jpg binary
+*.pdf binary
+*.zip binary

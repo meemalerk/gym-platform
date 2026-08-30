@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "tokens": "node ../../scripts/generate-console-tokens.mjs",
-    "codegen:api": "npx --yes openapi-typescript@7 http://localhost:${API_PORT:-8080}/api-docs/openapi.json -o src/lib/schema.d.ts"
+    "codegen:api": "node ../../scripts/codegen-api.mjs src/lib/schema.d.ts 8080"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
